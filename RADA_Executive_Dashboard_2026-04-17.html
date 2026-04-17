@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RADA RICHNESS Executive Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #FFFFFF;
+            --card: #F8FAFB;
+            --card2: #EEF2F6;
+            --text: #1A365D;
+            --sub: #5A7A9A;
+            --accent: #00A88F;
+            --green: #00A88F;
+            --yellow: #E6A817;
+            --red: #D94F4F;
+            --purple: #6B5CE7;
+            --orange: #E67E22;
+            --pink: #E84393;
+            --blue: #1E3A5F;
+            --teal: #00BFA5;
+            --border: #DCE4EC;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1A365D 0%, #234E78 40%, #1A6B5F 75%, #00A88F 100%);
+            color: white;
+            padding: 2rem 2rem;
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.15);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .header-info {
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        .header-date {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* TABS */
+        .tabs {
+            background-color: var(--card);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            gap: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            border: none;
+            background: linear-gradient(135deg, #E2E8F0, #EDF2F7);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--sub);
+            border-bottom: 4px solid transparent;
+            border-radius: 10px 10px 0 0;
+            margin-right: 4px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, #1A365D, #00A88F);
+            border-bottom-color: var(--accent);
+            box-shadow: 0 -2px 12px rgba(0,168,143,0.2);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text);
+            background: linear-gradient(135deg, #CBD5E0, #E2E8F0);
+        }
+
+        /* CONTENT */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* KPI ROW */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: var(--sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .kpi-value.highlight {
+            color: var(--accent);
+        }
+
+        /* ALERT SECTION */
+        .alert-section {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .alert-card {
+            flex: 1;
+            min-width: 250px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-card.red {
+            background-color: #FEF2F2;
+            border-left-color: var(--red);
+        }
+
+        .alert-card.yellow {
+            background-color: #FFFBEB;
+            border-left-color: var(--yellow);
+        }
+
+        .alert-icon {
+            font-size: 2rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .alert-content h3 {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-content p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--red);
+            line-height: 1;
+        }
+
+        .alert-card.yellow .alert-content p {
+            color: var(--yellow);
+        }
+
+        /* CHARTS SECTION */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background-color: var(--card);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .chart-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 420px;
+        }
+
+        /* TABLE SECTION */
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 2.5rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background-color: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        thead {
+            background-color: var(--card2);
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background-color: var(--card2);
+        }
+
+        /* STATUS BADGES */
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            text-transform: capitalize;
+        }
+
+        .status-in-progress {
+            background-color: rgba(0, 168, 143, 0.1);
+            color: var(--green);
+        }
+
+        .status-plan-to-do {
+            background-color: rgba(167, 139, 250, 0.1);
+            color: var(--purple);
+        }
+
+        .status-new-task {
+            background-color: rgba(147, 197, 253, 0.1);
+            color: var(--blue);
+        }
+
+        .status-meeting {
+            background-color: rgba(244, 114, 182, 0.1);
+            color: var(--pink);
+        }
+
+        .status-waiting {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--yellow);
+        }
+
+        .status-hold {
+            background-color: rgba(156, 163, 175, 0.1);
+            color: #6B7280;
+        }
+
+        .status-overdue {
+            background-color: rgba(217, 79, 79, 0.1);
+            color: var(--red);
+        }
+
+        .status-waiting-info {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: #4F46E5;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            transition: width 0.4s ease;
+        }
+
+        /* TASK LINK */
+        a.task-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        a.task-link:hover {
+            text-decoration: underline;
+            color: var(--blue);
+        }
+
+        /* CLICKUP BUTTON */
+        a.clickup-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #00A88F, #1A365D);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            transition: var(--transition);
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,168,143,0.25);
+        }
+
+        a.clickup-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0,168,143,0.35);
+            background: linear-gradient(135deg, #00C9A7, #234E78);
+        }
+
+        /* EXPANDABLE */
+        .expandable-row {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .expandable-row:hover {
+            background-color: var(--card2) !important;
+        }
+
+        .expand-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .expand-icon.open {
+            transform: rotate(90deg);
+        }
+
+        .detail-row {
+            display: none;
+        }
+
+        .detail-row.open {
+            display: table-row;
+        }
+
+        .detail-content {
+            padding: 1.5rem;
+            background-color: var(--card2);
+            font-size: 0.9rem;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .task-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* PRIORITY BADGE */
+        .priority-high {
+            background-color: rgba(217, 79, 79, 0.1);
+            color: var(--red);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        /* PRINT */
+        @media print {
+            .tabs, .chart-card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alert-section {
+                flex-direction: column;
+            }
+
+            .alert-card {
+                min-width: unset;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1.5rem 1rem;
+            }
+
+            .header-title {
+                font-size: 1.5rem;
+            }
+
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                padding: 0 1rem;
+            }
+
+            .tab-btn {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* CEO CALENDAR */
+        .calendar-section {
+            margin-bottom: 2rem;
+        }
+
+        .calendar-day-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-day-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, rgba(26,54,93,0.06), rgba(0,168,143,0.06));
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header .day-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .calendar-day-header.today {
+            background: linear-gradient(135deg, rgba(0,168,143,0.15), rgba(26,54,93,0.08));
+        }
+
+        .calendar-day-header.today .day-badge {
+            background: var(--red);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(217,79,79,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(217,79,79,0); }
+        }
+
+        .calendar-event {
+            display: flex;
+            align-items: stretch;
+            background: var(--card);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .calendar-event:hover {
+            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0,168,143,0.12);
+        }
+
+        .calendar-event .time-block {
+            min-width: 110px;
+            padding: 1rem;
+            background: linear-gradient(135deg, #1A365D, #234E78);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .calendar-event .time-block .time-start {
+            font-size: 1.1rem;
+        }
+
+        .calendar-event .time-block .time-sep {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin: 0.15rem 0;
+        }
+
+        .calendar-event .time-block .time-end {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        .calendar-event .event-content {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .calendar-event .event-title {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .calendar-event .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .location-badge.online {
+            background: rgba(0,168,143,0.12);
+            color: var(--accent);
+        }
+
+        .location-badge.onsite {
+            background: rgba(230,120,34,0.12);
+            color: var(--orange);
+        }
+
+        .meet-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(66,133,244,0.1);
+            color: #4285F4;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .meet-link:hover {
+            background: rgba(66,133,244,0.2);
+        }
+
+        .event-attendees {
+            font-size: 0.8rem;
+            color: var(--sub);
+        }
+
+        .calendar-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--sub);
+            font-size: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .calendar-event {
+                flex-direction: column;
+            }
+            .calendar-event .time-block {
+                flex-direction: row;
+                min-width: unset;
+                gap: 0.5rem;
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* CLIENT PROJECTS GRID */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
+        }
+
+        .project-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .project-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+
+        .project-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .project-modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--sub);
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+            background-color: var(--card);
+            border-radius: 50%;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            padding-right: 2rem;
+        }
+
+        .status-category-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .status-category-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .category-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .category-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .item-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <div class="header-title">RADA RICHNESS — Executive Dashboard</div>
+                <div class="header-subtitle">CEO: Orn (ออน)</div>
+            </div>
+            <div class="header-info">
+                <div class="header-date" id="headerDate">17 เมษายน 2569</div>
+                <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.25rem;">Daily Team Status Report</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="slot-team">Slot Team Dashboard</button>
+        <button class="tab-btn" data-tab="client-projects">โปรเจคลูกค้า (Client Projects)</button>
+        <button class="tab-btn" data-tab="ceo-calendar">ตารางประชุม CEO</button>
+        <button class="tab-btn" data-tab="pitching-stage">💪 Pitching Stage</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <!-- TAB 1: SLOT TEAM -->
+        <div id="slot-team" class="tab-content active">
+            <!-- KPI ROW 1 -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">งานทั้งหมด</div>
+                    <div class="kpi-value">64</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">กำลังทำ</div>
+                    <div class="kpi-value highlight">10</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">รอตรวจ</div>
+                    <div class="kpi-value highlight">2</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">งานใหม่</div>
+                    <div class="kpi-value highlight">24</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Plan to Do</div>
+                    <div class="kpi-value">12</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Meeting</div>
+                    <div class="kpi-value">13</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Hold</div>
+                    <div class="kpi-value">2</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Waiting Info</div>
+                    <div class="kpi-value">1</div>
+                </div>
+            </div>
+
+            <!-- KPI ROW 2 -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">✓ เสร็จวันนี้</div>
+                    <div class="kpi-value">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">⚡ งานใหม่วันนี้</div>
+                    <div class="kpi-value">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">⏳ ค้างสะสม</div>
+                    <div class="kpi-value">64</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Slot Active</div>
+                    <div class="kpi-value">4</div>
+                </div>
+            </div>
+
+            <!-- ALERT SECTION -->
+            <div class="alert-section">
+                <div class="alert-card red">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-content">
+                        <h3>Overdue Tasks</h3>
+                        <p id="overdueCount">0</p>
+                    </div>
+                </div>
+                <div class="alert-card yellow">
+                    <div class="alert-icon">⏱️</div>
+                    <div class="alert-content">
+                        <h3>Waiting CEO Approve</h3>
+                        <p id="waitingApproveCount">2</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>งานต่อคน (Tasks Per Person)</h3>
+                    <div class="chart-container">
+                        <canvas id="tasksPerPersonChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>สถานะงานทั่วไป (Status Distribution)</h3>
+                    <div class="chart-container">
+                        <canvas id="statusDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>สถานะต่อคน (Status per Person)</h3>
+                    <div class="chart-container">
+                        <canvas id="statusPerPersonChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>การกระจายงาน (Workload Distribution)</h3>
+                    <div class="chart-container">
+                        <canvas id="workloadChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEAM SUMMARY TABLE -->
+            <h2 class="section-title">สรุปทีมงาน (Team Summary)</h2>
+            <div class="table-wrapper">
+                <table id="teamSummaryTable">
+                    <thead>
+                        <tr>
+                            <th>สมาชิก</th>
+                            <th>งานทั้งหมด</th>
+                            <th>กำลังทำ</th>
+                            <th>รอตรวจ</th>
+                            <th>ใหม่/Plan</th>
+                            <th>Meeting</th>
+                            <th>Hold</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- WAITING APPROVE TABLE -->
+            <h2 class="section-title">งานรอตรวจสอบ (Waiting CEO Approval)</h2>
+            <div class="table-wrapper">
+                <table id="waitingApproveTable">
+                    <thead>
+                        <tr>
+                            <th>ชื่องาน</th>
+                            <th>สมาชิก</th>
+                            <th>สถานะ</th>
+                            <th>เปิดงาน</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- OVERDUE TABLE -->
+            <h2 class="section-title">งานที่เกินกำหนด (Overdue Tasks)</h2>
+            <div class="table-wrapper">
+                <table id="overdueTable">
+                    <thead>
+                        <tr>
+                            <th>ชื่องาน</th>
+                            <th>สมาชิก</th>
+                            <th>วันครบกำหนด</th>
+                            <th>สถานะ</th>
+                            <th>เปิดงาน</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: CLIENT PROJECTS -->
+        <div id="client-projects" class="tab-content">
+            <!-- KPI ROW -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">จำนวนลูกค้า</div>
+                    <div class="kpi-value highlight" id="clientCount">24</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">งานทั้งหมด</div>
+                    <div class="kpi-value highlight" id="clientTaskCount">169</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">มูลค่ารวม</div>
+                    <div class="kpi-value highlight" id="totalProjectValue">฿0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">ลูกค้ามีงบประมาณ</div>
+                    <div class="kpi-value" id="projectsWithBudget">0</div>
+                </div>
+            </div>
+
+            <!-- PROJECTS GRID -->
+            <div class="projects-grid" id="projectsGrid"></div>
+
+            <!-- PROJECT MODAL -->
+            <div id="projectModal" class="project-modal">
+                <div class="modal-content">
+                    <button class="modal-close" onclick="closeProjectModal()">✕</button>
+                    <div class="modal-title" id="modalTitle">Project Details</div>
+                    <div id="modalBody"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CEO CALENDAR -->
+        <div id="ceo-calendar" class="tab-content">
+            <!-- KPI ROW -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">ประชุมทั้งหมด</div>
+                    <div class="kpi-value highlight" id="calTotalMeetings">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">ประชุมวันนี้</div>
+                    <div class="kpi-value" style="color: var(--red)" id="calTodayMeetings">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Online</div>
+                    <div class="kpi-value" style="color: var(--accent)" id="calOnline">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Onsite</div>
+                    <div class="kpi-value" style="color: var(--orange)" id="calOnsite">0</div>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin: 2rem 0 1rem;">ตารางประชุม CEO — 17 เม.ย. – 30 เม.ย. 2569</div>
+            <div id="calendarContainer" class="calendar-section"></div>
+        </div>
+
+        <!-- TAB 4: PITCHING STAGE -->
+        <div id="pitching-stage" class="tab-content">
+            <!-- KPI ROW -->
+            <div class="kpi-row" id="pitchKpiRow"></div>
+
+            <!-- ALERT: ACTIVE PIPELINE -->
+            <div class="alert-section" id="pitchAlerts"></div>
+
+            <!-- CHARTS -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>สถานะ Pipeline (Status Distribution)</h3>
+                    <div class="chart-container"><canvas id="pitchStatusChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Priority ของ Deal ที่ Active</h3>
+                    <div class="chart-container"><canvas id="pitchPriorityChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <h2 class="section-title">Pitching Pipeline — Active Deals</h2>
+            <div class="table-wrapper" style="max-height:600px;overflow-y:auto">
+                <table id="pitchActiveTable">
+                    <thead>
+                        <tr>
+                            <th>โปรเจค / แบรนด์</th>
+                            <th>รายละเอียด</th>
+                            <th>สถานะ</th>
+                            <th>Priority</th>
+                            <th>เปิดงาน</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h2 class="section-title">Deals — Closed / Fail</h2>
+            <div class="table-wrapper" style="max-height:400px;overflow-y:auto">
+                <table id="pitchClosedTable">
+                    <thead>
+                        <tr>
+                            <th>โปรเจค / แบรนด์</th>
+                            <th>รายละเอียด</th>
+                            <th>สถานะ</th>
+                            <th>เปิดงาน</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================== DATA =====================
+
+        // Slot Team Data
+        const slotTeamData = {
+            'Namcha (น้ำชา)': {
+                person: 'Varintorn',
+                listId: '901815101101',
+                tasks: [
+                    { name: 'Inhouse I คัดภาพ Final ใส่เทมเพลส Portfolio', status: 'in-progress', url: 'https://app.clickup.com/t/86ex61m07' },
+                    { name: 'Inhouse I รวมภาพ Final Content ใส่ GG Photo', status: 'in-progress', url: 'https://app.clickup.com/t/86ex61kew' },
+                    { name: 'RADA I แจ้งเตือน Broadcast Finn Barber /Salon & Nail', status: 'plan to do', due: 1776978000000, url: 'https://app.clickup.com/t/86ex439xb' },
+                    { name: 'RADA I แจ้งเตือน Premium ID Apr\'2026 รอบ 1', status: 'plan to do', due: 1776632400000, url: 'https://app.clickup.com/t/86ex439m0' },
+                    { name: 'Privage I Partner Pipeline รอบ 29/04/2026', status: 'plan to do', due: 1777410000000, url: 'https://app.clickup.com/t/86ex439b6' },
+                    { name: 'Privage I Partner Pipeline รอบ 22/04/2026', status: 'plan to do', due: 1776805200000, url: 'https://app.clickup.com/t/86ex43959' },
+                    { name: 'Privage I Partner Pipeline รอบ 08/04/2026', status: 'in-progress', due: 1775595600000, url: 'https://app.clickup.com/t/86ex43923' },
+                    { name: 'Privage I คอนเทนต์ use case เพิ่ม', status: 'in-progress', url: 'https://app.clickup.com/t/86ex40vtc' },
+                    { name: 'Privage I เช็คร้านที่เป็นลูกค้าพริเวจ + โทรสื่อสารขอใช้สถานที่', status: 'in-progress', url: 'https://app.clickup.com/t/86ex40vgv' },
+                    { name: 'RADA I ปรับ Rate Card เป็น 9:16 ทั้งหมด', status: 'waiting informations', url: 'https://app.clickup.com/t/86ex30kpg' },
+                    { name: 'RADA I รวมโลโก้ลูกค้าที่ใช้บริการ + คัดมาลง Company Profile', status: 'plan to do', url: 'https://app.clickup.com/t/86ex21dg2' },
+                    { name: 'Privage I ตัดคลิปงาน Martech', status: 'in-progress', url: 'https://app.clickup.com/t/86ex2008q' },
+                    { name: 'Privage I ตัดคลิปงาน Skill Series', status: 'in-progress', url: 'https://app.clickup.com/t/86ex1zzq5' },
+                    { name: 'Privage I ตัดคลิปงาน Techsource โคราช', status: 'in-progress', url: 'https://app.clickup.com/t/86ex1zzdp' },
+                    { name: 'Wedding Card Project', status: 'plan to do', url: 'https://app.clickup.com/t/86ewuffc6' },
+                    { name: 'YPC I หาเรฟ + ตัดคลิปสั้นโปรโมทโครงการ', status: 'hold', priority: 'normal', url: 'https://app.clickup.com/t/86ew8ptmu' },
+                    { name: 'POSxPAY I ตัดต่อวิดีโอ 2 clip', status: 'hold', priority: 'high', url: 'https://app.clickup.com/t/86ew8pqmy' },
+                    { name: 'Inhouse I หารายชื่อคอร์สเรียน หลักสูตรผู้บริหาร/นักธุรกิจ', status: 'in-progress', url: 'https://app.clickup.com/t/86ew8ppv9' },
+                    { name: 'Inhouse I รวมงาน VDO ที่เคยตัดต่อ ไว้ในลิงค์เดียว', status: 'plan to do', url: 'https://app.clickup.com/t/86ew8ppb4' },
+                    { name: 'สักกำบ่ I สร้าง Linktree รวม Social Media', status: 'plan to do', url: 'https://app.clickup.com/t/86ew8pmxv' },
+                    { name: 'สักกำบ่ I ออกแบบ Rich Menu + สร้าง Greeting Message', status: 'plan to do', url: 'https://app.clickup.com/t/86ew7bz75' },
+                    { name: 'สักกำบ่ I ทำ Rate Card ราคาขายส่ง/ขายปลีก', status: 'plan to do', url: 'https://app.clickup.com/t/86ew7byeu' },
+                    { name: 'สักกำบ่ I โทรถามร้านในลิสต์ Market Survey', status: 'plan to do', url: 'https://app.clickup.com/t/86ew7by12' },
+                    { name: 'Privage I เช็คงานที่ทำให้ Privage ปี 2025 และทำใบเสนอราคาย้อนหลัง', status: 'in-progress', priority: 'high', due: 1769720400000, url: 'https://app.clickup.com/t/86ew7bxen' },
+                    { name: 'Privage I Survey IG CRM B2B', status: 'waiting recheck&approve', priority: 'high', due: 1769720400000, url: 'https://app.clickup.com/t/86ew7bwq2' },
+                    { name: 'Inhouse I วาง Flow การทำงาน และ ทำเป็น Infographic สำหรับใช้ Inhouse', status: 'in-progress', url: 'https://app.clickup.com/t/86ew7bvuz' },
+                    { name: 'Privage | บรีฟออกแบบป้ายพีพี บอร์ด + ขอราคางานพิมพ์', status: 'waiting recheck&approve', priority: 'urgent', due: 1768424400000, url: 'https://app.clickup.com/t/86ew6z70k' }
+                ]
+            },
+            'Arm (อาร์ม)': {
+                person: 'Supapong',
+                listId: '901816883436',
+                tasks: [
+                    { name: 'Ennkai Resort | MAR\'2026 | Monthly Report 18:00-19:00', status: 'meeting', due: 1775822400000, url: 'https://app.clickup.com/t/86ex4dwag' },
+                    { name: 'STARKE | Monthly Report Meeting 11:00-12:00', status: 'meeting', due: 1776409200000, url: 'https://app.clickup.com/t/86ex3gr7z' }
+                ]
+            },
+            'Katiel (คาเทล)': {
+                person: 'Jomsuda',
+                listId: '901816887597',
+                tasks: [
+                    { name: 'Srifa (กำแพงเพชร) | Meeting 15:00-16:00', status: 'meeting', due: 1775595600000, url: 'https://app.clickup.com/t/86ex97egy' },
+                    { name: 'Landing Page Website Recap K.Chompoo', status: 'meeting', due: 1775682000000, url: 'https://app.clickup.com/t/86ex6zb5k' },
+                    { name: 'Privage x ESC Park I นำเสนอ Concept CRM (Online)', status: 'meeting', due: 1775768400000, url: 'https://app.clickup.com/t/86ex6zax8' },
+                    { name: 'Srifa Admin Set Post Recap K.Nan', status: 'meeting', due: 1775682000000, url: 'https://app.clickup.com/t/86ex6zaej' },
+                    { name: 'Company Profile + E-Book | BILLION THAI SUPPLYS Recap K.Wam', status: 'meeting', due: 1775682000000, url: 'https://app.clickup.com/t/86ex6zabg' },
+                    { name: 'STARKE | Recap Content (New Topic) K.Jane', status: 'meeting', due: 1775077200000, url: 'https://app.clickup.com/t/86ex4aj1n' },
+                    { name: 'Billion Thai Supply | Meeting 16:00-17:00 (Inhouse)', status: 'meeting', due: 1774990800000, url: 'https://app.clickup.com/t/86ex43qwy' },
+                    { name: 'Billion Thai Supply | Meeting 13:00-14:00', status: 'meeting', due: 1774990800000, url: 'https://app.clickup.com/t/86ex43qtu' },
+                    { name: 'STARKE | Monthly Meet', status: 'meeting', due: 1775163600000, url: 'https://app.clickup.com/t/86ex43qng' },
+                    { name: 'Srifa (กำแพงเพชร) | Meeing 16:00-17:00', status: 'meeting', due: 1774558800000, url: 'https://app.clickup.com/t/86ex1mgkv' },
+                    { name: 'Chata | Meeing 16:00-17:00', status: 'meeting', due: 1774386000000, url: 'https://app.clickup.com/t/86ex1mfqp' }
+                ]
+            },
+            'Bas (บาส)': {
+                person: 'Rachan',
+                listId: '901816887311',
+                tasks: [
+                    { name: 'ISARINTR I Card Message', status: 'new task', url: 'https://app.clickup.com/t/86ex9c9kj' },
+                    { name: 'ISARINTR I Rich Message', status: 'new task', url: 'https://app.clickup.com/t/86ex9c9ke' },
+                    { name: 'House999 | ป้ายกล่องไฟ ตั้งหน้าร้าน ขนาด 130x80 cm แนวตั้ง', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8xn' },
+                    { name: '10 | STARKE | APR | MO | สงกรานต์นี้ STARKE พร้อมฉีด', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8x3' },
+                    { name: '1 | ธงชัยการแพทย์ | APR | SIG | โปรแรงเดือนนี้', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8w8' },
+                    { name: '1 | AMT Capital | APR | SIG | สงกรานต์รายจ่ายทะลัก', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8rx' },
+                    { name: 'Celeb Medical | APR | LINE OA | Rich Menu (8 APR)', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8q8' },
+                    { name: '11 | STARKE | APR | SIG | เลิกเหนื่อยกับงานล้างเดิม', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8mp' },
+                    { name: '1 | TRiVii | APR | PHO | สบู่อาบน้ำ', status: 'new task', url: 'https://app.clickup.com/t/86ex6z8ka' },
+                    { name: 'ขึ้นMOTION 3 | STARKE | APR | MO', status: 'new task', due: 1775077200000, url: 'https://app.clickup.com/t/86ex4ha48' },
+                    { name: '8 | STARKE | APR | SIG', status: 'new task', due: 1775077200000, url: 'https://app.clickup.com/t/86ex4h9v3' },
+                    { name: 'แก้ไข logo chata', status: 'new task', due: 1774904400000, url: 'https://app.clickup.com/t/86ex3k21j' },
+                    { name: '7 | STARKE | APR | SIG', status: 'new task', due: 1774904400000, url: 'https://app.clickup.com/t/86ex3k203' },
+                    { name: '6 | STARKE | APR | SIG', status: 'new task', due: 1774904400000, url: 'https://app.clickup.com/t/86ex3k1z7' },
+                    { name: '5 | STARKE | APR | SIG', status: 'new task', due: 1774818000000, url: 'https://app.clickup.com/t/86ex3k1x1' },
+                    { name: '4 | STARKE | APR | SIG', status: 'new task', due: 1774818000000, url: 'https://app.clickup.com/t/86ex3k1u9' },
+                    { name: 'Srifa Songkhla | APR | LINE OA | Rich Menu (D1 1 APR)', status: 'new task', due: 1774990800000, url: 'https://app.clickup.com/t/86ex2yhwj' },
+                    { name: '4 | STARKE | APR | SIG | ซัดคราบให้ราบ', status: 'new task', due: 1774558800000, url: 'https://app.clickup.com/t/86ex2cgb3' },
+                    { name: '3 | STARKE | APR | MO', status: 'new task', due: 1774558800000, url: 'https://app.clickup.com/t/86ex2cg9c' },
+                    { name: '2 | STARKE | APR | SIG', status: 'new task', due: 1774472400000, url: 'https://app.clickup.com/t/86ex2193f' },
+                    { name: '1 | STARKE | APR | SIG', status: 'new task', due: 1774472400000, url: 'https://app.clickup.com/t/86ex2190e' },
+                    { name: 'แสงรุ่งกรุ๊ป Catalog Food | ออกแบบ Company Profile + E-Book', status: 'new task', due: 1774472400000, url: 'https://app.clickup.com/t/86ex218yf' },
+                    { name: 'แก้ไข LOGO CHATA', status: 'new task', due: 1774386000000, url: 'https://app.clickup.com/t/86ex1mf4y' },
+                    { name: 'Privage | VDO Motion | MAR\'2026', status: 'new task', due: 1775595600000, url: 'https://app.clickup.com/t/86ex17etq' }
+                ]
+            }
+        };
+
+        // Client Projects Data
+        const clientProjectsData = {
+            'Starke': {
+                listId: '901815671104',
+                tasks: [
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99d2z', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99d2w', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99d2n', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99d2f', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99cq8', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99cjh', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99cjc', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99cfm', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99cfj', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ex99cat', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ewec7qk', value: 0 },
+                    { name: 'Graphic Content 15 posts', status: 'content', url: 'https://app.clickup.com/t/86ewec5j6', value: 0 },
+                    { name: 'Meta Ads Mar\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2xd8', value: 15000 },
+                    { name: 'Meta Ads Apr\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2xnj', value: 15000 },
+                    { name: 'Meta Ads May\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2z3p', value: 15000 },
+                    { name: 'Meta Ads Jun\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2z95', value: 15000 },
+                    { name: 'Meta Ads Jul\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2zf2', value: 15000 },
+                    { name: 'Meta Ads Aug\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2zmb', value: 15000 },
+                    { name: 'Meta Ads Sep\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf2zvq', value: 15000 },
+                    { name: 'Meta Ads Oct\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf301f', value: 15000 },
+                    { name: 'Meta Ads Nov\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf3091', value: 15000 },
+                    { name: 'Meta Ads Dec\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewf30d4', value: 15000 },
+                    { name: 'Meta Ads Jan\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewec77b', value: 15000 },
+                    { name: 'Meta Ads Feb\'2026 งบ 15,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewec7m7', value: 15000 },
+                    { name: 'Monthly Report Jan\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxvth', value: 0 },
+                    { name: 'Monthly Report Feb\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxw66', value: 0 },
+                    { name: 'Monthly Report Mar\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxwce', value: 0 },
+                    { name: 'Monthly Report Apr\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxwj0', value: 0 },
+                    { name: 'Monthly Report May\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxwrm', value: 0 },
+                    { name: 'Monthly Report Jun\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxx19', value: 0 },
+                    { name: 'Monthly Report Jul\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxx7v', value: 0 },
+                    { name: 'Monthly Report Aug\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxxdw', value: 0 },
+                    { name: 'Monthly Report Sep\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxxju', value: 0 },
+                    { name: 'Monthly Report Oct\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxxu4', value: 0 },
+                    { name: 'Monthly Report Nov\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxy23', value: 0 },
+                    { name: 'Monthly Report Dec\'2026', status: 'report', url: 'https://app.clickup.com/t/86ewhxy89', value: 0 }
+                ]
+            },
+            'Ennkai Resort': {
+                listId: '901815157538',
+                tasks: [
+                    { name: 'Meta Ads | BG 12K (×9 เดือน)', status: 'ads', url: 'https://app.clickup.com/t/86ex99fha', value: 108000 },
+                    { name: 'Meta Ads เพิ่มงบ 3,000 (×3 ครั้ง)', status: 'ads', url: 'https://app.clickup.com/t/86ex99g79', value: 9000 },
+                    { name: 'ออกแบบ Graphic Banner เตือนเพจปลอม', status: 'content marketing', url: 'https://app.clickup.com/t/86ew9uayd', value: 0 },
+                    { name: 'ออกแบบ Cover Page Facebook', status: 'cover page', url: 'https://app.clickup.com/t/86ew9u6xb', value: 0 }
+                ]
+            },
+            'ESC Park (CRM)': {
+                listId: '901817444726',
+                tasks: [
+                    { name: 'CRM Consult 30,000.-', status: 'crm', url: 'https://app.clickup.com/t/86ex9cgth', value: 30000 },
+                    { name: 'ค่าเชื่อม Rich Menu / Notify 3,500.-', status: 'crm', url: 'https://app.clickup.com/t/86ex9cgtg', value: 3500 },
+                    { name: 'ค่าบริการติดตั้ง 2,900.-', status: 'crm', url: 'https://app.clickup.com/t/86ex9cgtc', value: 2900 },
+                    { name: 'SMS OTP #2 1,000.-', status: 'crm', url: 'https://app.clickup.com/t/86ex9cgta', value: 1000 },
+                    { name: 'Package Standard 4,900.-', status: 'crm', url: 'https://app.clickup.com/t/86ex9cgt7', value: 4900 },
+                    { name: 'ออกแบบ Rich Menu 1,500.-', status: 'line oa', url: 'https://app.clickup.com/t/86ex9cfyn', value: 1500 }
+                ]
+            },
+            'ISARINTR': {
+                listId: '901815378630',
+                tasks: [
+                    { name: 'Management Fee 5,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ew9u3bb', value: 5000 },
+                    { name: 'Meta Ads งบ 15,000.- Feb\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ew9u0zk', value: 15000 },
+                    { name: 'สร้างบัญชี LINE OA', status: 'line oa', url: 'https://app.clickup.com/t/86ex98y90', value: 0 },
+                    { name: 'ซื้อ Premium ID', status: 'line oa', url: 'https://app.clickup.com/t/86ex98y92', value: 0 },
+                    { name: 'Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ex98y8j', value: 0 },
+                    { name: 'Rich Message', status: 'line oa', url: 'https://app.clickup.com/t/86ex98y8k', value: 0 },
+                    { name: 'Card Message', status: 'line oa', url: 'https://app.clickup.com/t/86ex98y8q', value: 0 }
+                ]
+            },
+            'WRC Energy': {
+                listId: '901815339349',
+                tasks: [
+                    { name: 'Meta Ads งบ 10,000.- Feb\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ew99dh7', value: 10000 },
+                    { name: 'Google Ads งบ 20,000.- Feb\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ew981uc', value: 20000 },
+                    { name: 'Website', status: 'website', url: 'https://app.clickup.com/t/86ew97whh', value: 0 },
+                    { name: '(รอพิจารณา) Graphic Content 10posts/month x 3 months', status: 'planning', url: 'https://app.clickup.com/t/86ew9810z', value: 0 },
+                    { name: '(รอพิจารณา) SEO Article 1 posts/month x 3 months', status: 'planning', url: 'https://app.clickup.com/t/86ew999w9', value: 0 }
+                ]
+            },
+            'P Solar': {
+                listId: '901815198634',
+                tasks: [
+                    { name: 'Corporate Website (Pro)', status: 'website', url: 'https://app.clickup.com/t/86ew99p2k', value: 0 },
+                    { name: 'VDO Production (Pre-Pro-Post)', status: 'production', url: 'https://app.clickup.com/t/86ew99qh2', value: 0 },
+                    { name: 'ถ่ายภาพนิ่ง Production', status: 'production', url: 'https://app.clickup.com/t/86ew99qtj', value: 0 },
+                    { name: 'ออกแบบ Company Profile', status: 'e-book', url: 'https://app.clickup.com/t/86ew99gfe', value: 0 },
+                    { name: 'ออกแบบเสื้อ 3 แบบ', status: 'design', url: 'https://app.clickup.com/t/86ew99r2y', value: 0 },
+                    { name: '(แถม) สร้างช่อง Youtube + โพสต์ Full Company Profile', status: 'marketing channel', url: 'https://app.clickup.com/t/86ew9a8ta', value: 0 },
+                    { name: '(แถม) ออกแบบปกช่อง Youtube', status: 'cover page', url: 'https://app.clickup.com/t/86ew9a975', value: 0 }
+                ]
+            },
+            'Gee Solar': {
+                listId: '901815670964',
+                tasks: [
+                    { name: 'Meta Ads Jan\'2026 งบ 20,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewec3qm', value: 20000 },
+                    { name: 'Meta Ads Feb\'2026 งบ 40,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewec2rd', value: 40000 },
+                    { name: 'เพิ่ม Meta Ads Jan\'2026 งบ 10,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewec2rk', value: 10000 },
+                    { name: 'เพิ่ม Ads Fee 700.- Jan\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ewec2ra', value: 700 },
+                    { name: 'Ads Fee 5,000.- Jan\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ewec3zr', value: 5000 },
+                    { name: 'Ads Fee 5,000.- Feb\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ewec2ry', value: 5000 }
+                ]
+            },
+            'Pk Fence': {
+                listId: '901815436304',
+                tasks: [
+                    { name: 'Meta Ads Jan\'2026 งบ 12,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewebxdk', value: 12000 },
+                    { name: 'Meta Ads Feb\'2026 งบ 12,000.-', status: 'ads', url: 'https://app.clickup.com/t/86ewebyjr', value: 12000 },
+                    { name: 'Ads Fee 5,000.- Jan\'2026', status: 'ads', url: 'https://app.clickup.com/t/86ewebxz0', value: 5000 },
+                    { name: 'Ads Fee 5,000.- Feb\'2026', status: 'ads', url: 'https://app.clickup.com/t/86eweby5b', value: 5000 }
+                ]
+            },
+            'Danilife': {
+                listId: '901815436298',
+                tasks: [
+                    { name: 'Content 36 post', status: 'content marketing', url: 'https://app.clickup.com/t/86ewbrzpp', value: 0 },
+                    { name: 'KOL TikTok 10 account', status: 'kol', url: 'https://app.clickup.com/t/86ewbrzxd', value: 0 },
+                    { name: 'Ads Management Fee 3 month', status: 'ads', url: 'https://app.clickup.com/t/86ewbt07v', value: 0 },
+                    { name: 'งบ Ads Meta 3 month', status: 'ads', url: 'https://app.clickup.com/t/86ewbrytd', value: 0 },
+                    { name: 'Product Packshot', status: 'product packshot', url: 'https://app.clickup.com/t/86ewbrz77', value: 0 },
+                    { name: 'ออกแบบ Cover Page FB', status: 'marketing channel', url: 'https://app.clickup.com/t/86ewbt0wp', value: 0 },
+                    { name: 'สร้างเพจ Facebook', status: 'marketing channel', url: 'https://app.clickup.com/t/86ewbt0m9', value: 0 },
+                    { name: 'งานออกแบบ LINE OA', status: 'line oa', url: 'https://app.clickup.com/t/86ewbt12x', value: 0 },
+                    { name: 'สร้าง LINE MyShop', status: 'line oa', url: 'https://app.clickup.com/t/86ewbt19y', value: 0 },
+                    { name: 'สร้างร้านค้าบน TikTok', status: 'sale channel', url: 'https://app.clickup.com/t/86ewbt1mj', value: 0 },
+                    { name: 'ระบบบัตรสมาชิก Privage CRM 1,900.-', status: 'crm', url: 'https://app.clickup.com/t/86ewbt1z2', value: 1900 },
+                    { name: 'เติมเครดิต SMS 500.-', status: 'crm', url: 'https://app.clickup.com/t/86ewbt2a9', value: 500 },
+                    { name: 'ซื้อยอด follower 2,000 คน', status: 'sale channel', url: 'https://app.clickup.com/t/86ewbt2jb', value: 0 },
+                    { name: 'ออกแบบ Graphic Content 1 post', status: 'content marketing', url: 'https://app.clickup.com/t/86ewbt2wb', value: 0 }
+                ]
+            },
+            'Q Ro & System Excellent': {
+                listId: '901815157506',
+                tasks: [
+                    { name: 'Q Ro : Company Profile', status: 'e-book', url: 'https://app.clickup.com/t/86ew957cf', value: 0 },
+                    { name: 'Q Ro : LINE OA : Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ew95d0q', value: 0 },
+                    { name: 'Q Ro : CRM Starter บัญชีที่ 1', status: 'privage crm', url: 'https://app.clickup.com/t/86ew95db7', value: 0 },
+                    { name: 'Q Ro : ออกแบบสื่อโปรโมท CRM', status: 'content marketing', url: 'https://app.clickup.com/t/86ew95zmz', value: 0 },
+                    { name: 'System Excellent : ออกแบบสื่อโปรโมท CRM', status: 'content marketing', url: 'https://app.clickup.com/t/86ew95pe4', value: 0 },
+                    { name: 'System Excellent : CRM Starter บัญชีที่ 2', status: 'privage crm', url: 'https://app.clickup.com/t/86ew95ree', value: 0 },
+                    { name: 'System Excellent : Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ew95wc7', value: 0 }
+                ]
+            },
+            'PPMS': {
+                listId: '901815333121',
+                tasks: [
+                    { name: 'LINE OA : Rich Menu บัญชีลูกค้าทั่วไป', status: 'line oa', url: 'https://app.clickup.com/t/86ew9517v', value: 0 },
+                    { name: 'LINE OA : Rich Message บัญชีลูกค้าทั่วไป', status: 'line oa', url: 'https://app.clickup.com/t/86ew951x9', value: 0 },
+                    { name: 'LINE OA : Card Message บัญชีลูกค้าทั่วไป', status: 'line oa', url: 'https://app.clickup.com/t/86ew95215', value: 0 },
+                    { name: 'LINE OA : Rich Menu บัญชีลูกค้าที่ติดตั้งแล้ว', status: 'line oa', url: 'https://app.clickup.com/t/86ew952c3', value: 0 },
+                    { name: 'LINE OA : Verify โล่น้ำเงิน', status: 'line oa', url: 'https://app.clickup.com/t/86ew952r3', value: 0 },
+                    { name: 'Meta Ads Dec\'2025', status: 'ads', url: 'https://app.clickup.com/t/86ew94zkv', value: 0 }
+                ]
+            },
+            'Srifa คุณเอฟ กำแพงเพชร': {
+                listId: '901817240119',
+                tasks: [
+                    { name: 'Create Facebook Page', status: 'create account', url: 'https://app.clickup.com/t/86ex9840h', value: 0 },
+                    { name: 'Create TikTok', status: 'create account', url: 'https://app.clickup.com/t/86ex9840n', value: 0 },
+                    { name: 'Create LINE Official', status: 'create account', url: 'https://app.clickup.com/t/86ex98414', value: 0 },
+                    { name: 'Buy Premium ID 1 Year', status: 'line oa', url: 'https://app.clickup.com/t/86ex9841a', value: 0 },
+                    { name: 'Creative Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ex9841e', value: 0 },
+                    { name: 'Creative Rich Message', status: 'line oa', url: 'https://app.clickup.com/t/86ex9841j', value: 0 },
+                    { name: 'Creative Card Message', status: 'line oa', url: 'https://app.clickup.com/t/86ex9841p', value: 0 },
+                    { name: 'Create Cover Page Facebook', status: 'create cover page', url: 'https://app.clickup.com/t/86ex983wh', value: 0 },
+                    { name: 'Create Caption 10+2 post/month (×6)', status: 'content planner', url: 'https://app.clickup.com/t/86ex982rw', value: 0 },
+                    { name: 'Creative Brief VDO 2 clip/month (×6)', status: 'video editor', url: 'https://app.clickup.com/t/86ex98466', value: 0 },
+                    { name: 'Edit New Video 8 clips/month (×6)', status: 'creative video', url: 'https://app.clickup.com/t/86ex98by7', value: 0 }
+                ]
+            },
+            'Srifa คุณกว้าง หาดใหญ่': {
+                listId: '901817435878',
+                tasks: [
+                    { name: 'Srifa หาดใหญ่ I คิดแคปชั่น 10+2 posts/month (×6)', status: 'content planner', url: 'https://app.clickup.com/t/86ex98281', value: 0 },
+                    { name: 'Srifa หาดใหญ่ I ออกแบบ Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ex98xbb', value: 0 },
+                    { name: 'Srifa เมืองสงขลา I ออกแบบ Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ex98w7j', value: 0 },
+                    { name: 'Srifa เมืองตรัง I ออกแบบ Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ex98xex', value: 0 }
+                ]
+            },
+            'มาหาหน่อย หม่าล่าทั่ง': {
+                listId: '901815401719',
+                tasks: [
+                    { name: 'CRM Standard', status: 'privage crm', url: 'https://app.clickup.com/t/86ewa4um5', value: 0 },
+                    { name: 'ออกแบบ Rich Menu (CRM)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4vd5', value: 0 },
+                    { name: 'ออกแบบป้ายไฟ', status: 'design', url: 'https://app.clickup.com/t/86ewa4vk4', value: 0 },
+                    { name: 'Linktree บัญชีรวม Google Map', status: 'linktree', url: 'https://app.clickup.com/t/86ewa4wbc', value: 0 },
+                    { name: 'Linktree บัญชีรวม Delivery', status: 'linktree', url: 'https://app.clickup.com/t/86ewa4xg5', value: 0 },
+                    { name: 'Linktree บัญชีรวม Social Media', status: 'linktree', url: 'https://app.clickup.com/t/86ewa4xjy', value: 0 },
+                    { name: '(รอชำระ) Background Template Content (Canva)', status: 'planning', url: 'https://app.clickup.com/t/86ewa4xwu', value: 0 },
+                    { name: '(รอชำระ) Graphic Content Marketing 4 posts/month', status: 'planning', url: 'https://app.clickup.com/t/86ewa507a', value: 0 },
+                    { name: '(รอชำระ) Corporate Website', status: 'planning', url: 'https://app.clickup.com/t/86ewa510f', value: 0 },
+                    { name: '(รอชำระ) Graphic Content Marketing 4 posts/month', status: 'planning', url: 'https://app.clickup.com/t/86ewa51p8', value: 0 }
+                ]
+            },
+            'Billion Thai Supply': {
+                listId: '901815436318',
+                tasks: [
+                    { name: 'ออกแบบ Company Profile', status: 'e-book', url: 'https://app.clickup.com/t/86ewec12e', value: 0 }
+                ]
+            },
+            'แสงรุ่ง': {
+                listId: '901815436268',
+                tasks: [
+                    { name: '(รอพิจารณา) ออกแบบ Company Profile 3 เล่ม', status: 'planning', url: 'https://app.clickup.com/t/86ewawmm0', value: 0 },
+                    { name: '(รอพิจารณา) Meta Ads งบ 15,000.-', status: 'planning', url: 'https://app.clickup.com/t/86ewawm5m', value: 15000 },
+                    { name: '(รอพิจารณา) Meta Ads Management Fee 6 months', status: 'planning', url: 'https://app.clickup.com/t/86ewawkn9', value: 0 },
+                    { name: 'เขียนบริการ + ออกแบบปกบทความ 3 months', status: 'seo article', url: 'https://app.clickup.com/t/86ewawhth', value: 0 }
+                ]
+            },
+            'FINN BARBER / SALON & NAILS': {
+                listId: '901815448142',
+                tasks: [
+                    { name: 'ต่ออายุแพ็คเกจบรอดแคส Basic Feb\'2026', status: 'แพ็คเกจ broadcast รายเดือน', url: 'https://app.clickup.com/t/86ewawqkg', value: 0 },
+                    { name: 'ต่ออายุแพ็คเกจบรอดแคส Basic Feb\'2026', status: 'แพ็คเกจ broadcast รายเดือน', url: 'https://app.clickup.com/t/86ewawpru', value: 0 }
+                ]
+            },
+            'Patana Intercool': {
+                listId: '901815436330',
+                tasks: [
+                    { name: '(Hold) ออกแบบ Catalog 15 หน้า', status: 'e-book', url: 'https://app.clickup.com/t/86ewawfmg', value: 0 },
+                    { name: 'ออกแบบ Roll-up (Apr\'2025)', status: 'printing', url: 'https://app.clickup.com/t/86ewawd15', value: 0 },
+                    { name: 'ออกแบบ Roll-up งานบริการหลัก (Jul\'2025)', status: 'printing', url: 'https://app.clickup.com/t/86ewawenj', value: 0 }
+                ]
+            },
+            'V Boost Clinic': {
+                listId: '901815436291',
+                tasks: [
+                    { name: '(รอชำระ) ออกแบบ Rich Menu', status: 'line oa', url: 'https://app.clickup.com/t/86ewec0d2', value: 0 }
+                ]
+            },
+            'Media Pro Plus': {
+                listId: '901815399884',
+                tasks: [
+                    { name: 'บริการทำบัญชี Nov\'2025', status: 'บัญชี acc', url: 'https://app.clickup.com/t/86ewa4jgx', value: 0 },
+                    { name: 'ออกแบบ Company Profile (2025)', status: 'e-book', url: 'https://app.clickup.com/t/86ewa4fn6', value: 0 },
+                    { name: 'ออกแบบ Rich Menu (2023)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4bdk', value: 0 },
+                    { name: 'ออกแบบ Rich Message (2023)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4cxp', value: 0 },
+                    { name: 'ออกแบบ Card Message (2023)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4kc5', value: 0 },
+                    { name: 'แก้ไข Card Message (2024)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4dfw', value: 0 },
+                    { name: 'แก้ไข Card Message (2025)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4g9b', value: 0 },
+                    { name: 'ออกแบบ Card Message', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4ak9', value: 0 }
+                ]
+            },
+            'Like Dental Clinic': {
+                listId: '901815401297',
+                tasks: [
+                    { name: 'ออกแบบ Rich Menu (2023)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4m87', value: 0 },
+                    { name: 'ออกแบบ Rich Message (2023)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4m6d', value: 0 },
+                    { name: 'ออกแบบ Card Message (2023)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4kc5', value: 0 },
+                    { name: 'ออกแบบ Rich Menu (2025)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4mk2', value: 0 },
+                    { name: 'ออกแบบ Rich Message (2025)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4n0c', value: 0 },
+                    { name: 'ออกแบบ Card Message (2025)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4n2d', value: 0 },
+                    { name: 'ออกแบบ Rich Menu (2026)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4p36', value: 0 },
+                    { name: 'ออกแบบ Rich Message (2026)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4pqy', value: 0 },
+                    { name: 'ออกแบบ Card Message (2026)', status: 'line oa', url: 'https://app.clickup.com/t/86ewa4pxc', value: 0 }
+                ]
+            },
+            'Ben Logistics': {
+                listId: '901815436281',
+                tasks: [
+                    { name: 'ปรับหน้า Website', status: 'website', url: 'https://app.clickup.com/t/86ewebz3u', value: 0 }
+                ]
+            },
+            'K.S.IDEAL GROUP': {
+                listId: '901815158540',
+                tasks: []
+            }
+        };
+
+        const statusColors = {
+            'in-progress': { bg: 'rgba(0, 168, 143, 0.1)', color: '#00A88F' },
+            'plan to do': { bg: 'rgba(167, 139, 250, 0.1)', color: '#A78BFA' },
+            'new task': { bg: 'rgba(147, 197, 253, 0.1)', color: '#1E3A5F' },
+            'meeting': { bg: 'rgba(244, 114, 182, 0.1)', color: '#E84393' },
+            'waiting recheck&approve': { bg: 'rgba(245, 158, 11, 0.1)', color: '#E6A817' },
+            'hold': { bg: 'rgba(156, 163, 175, 0.1)', color: '#6B7280' },
+            'waiting informations': { bg: 'rgba(99, 102, 241, 0.1)', color: '#4F46E5' }
+        };
+
+        const clientStatusColors = {
+            'ads': '#E67E22',
+            'content': '#00A88F',
+            'content marketing': '#00A88F',
+            'content planner': '#A78BFA',
+            'line oa': '#00BFA5',
+            'crm': '#6B5CE7',
+            'privage crm': '#6B5CE7',
+            'website': '#3B82F6',
+            'e-book': '#EC4899',
+            'production': '#F59E0B',
+            'design': '#8B5CF6',
+            'printing': '#6366F1',
+            'report': '#10B981',
+            'planning': '#9CA3AF',
+            'kol': '#F97316',
+            'create account': '#14B8A6',
+            'seo article': '#0EA5E9',
+            'creative video': '#EF4444',
+            'video editor': '#EF4444',
+            'sale channel': '#A855F7',
+            'marketing channel': '#3B82F6',
+            'create cover page': '#EC4899',
+            'linktree': '#22C55E'
+        };
+
+        // ===================== UTILITIES =====================
+
+        const today = 1776979200000; // 2026-04-17 00:00:00 UTC
+
+        function formatDate(timestamp) {
+            if (!timestamp) return '-';
+            const date = new Date(timestamp);
+            const monthsTh = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            return `${date.getDate()} ${monthsTh[date.getMonth()]} ${date.getFullYear() + 543}`;
+        }
+
+        function getStatusBadgeClass(status) {
+            const cleanStatus = status.toLowerCase().replace(/ /g, '-');
+            if (cleanStatus.includes('in-progress')) return 'status-in-progress';
+            if (cleanStatus.includes('plan')) return 'status-plan-to-do';
+            if (cleanStatus.includes('new')) return 'status-new-task';
+            if (cleanStatus.includes('meeting')) return 'status-meeting';
+            if (cleanStatus.includes('waiting')) return 'status-waiting';
+            if (cleanStatus.includes('hold')) return 'status-hold';
+            if (cleanStatus.includes('information')) return 'status-waiting-info';
+            return 'status-waiting';
+        }
+
+        function isOverdue(dueDate) {
+            return dueDate && dueDate < today;
+        }
+
+        // ===================== TAB SWITCHING =====================
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+
+                if (tabName === 'client-projects') {
+                    renderClientProjects();
+                } else if (tabName === 'ceo-calendar') {
+                    renderCEOCalendar();
+                }
+            });
+        });
+
+        // ===================== TEAM DASHBOARD =====================
+
+        function renderTeamDashboard() {
+            // Collect all tasks and statistics
+            const allTasks = [];
+            const personStats = {};
+
+            for (const [slotName, slotData] of Object.entries(slotTeamData)) {
+                const person = slotData.person;
+                if (!personStats[person]) {
+                    personStats[person] = {
+                        person,
+                        slot: slotName,
+                        total: 0,
+                        'in-progress': 0,
+                        'plan to do': 0,
+                        'new task': 0,
+                        'meeting': 0,
+                        'waiting recheck&approve': 0,
+                        'hold': 0,
+                        'waiting informations': 0
+                    };
+                }
+                slotData.tasks.forEach(task => {
+                    allTasks.push({ ...task, person });
+                    personStats[person].total++;
+                    const status = task.status.toLowerCase();
+                    if (personStats[person][status] !== undefined) {
+                        personStats[person][status]++;
+                    }
+                });
+            }
+
+            // Render Team Summary Table
+            const teamTable = document.querySelector('#teamSummaryTable tbody');
+            teamTable.innerHTML = '';
+            Object.values(personStats).forEach((stat, idx) => {
+                const active = stat['in-progress'] + stat['plan to do'] + stat['new task'];
+                const progress = stat.total > 0 ? Math.round((active / stat.total) * 100) : 0;
+                const row = document.createElement('tr');
+                row.className = 'expandable-row';
+                row.innerHTML = `
+                    <td><span class="expand-icon">▶</span>${stat.person}</td>
+                    <td>${stat.total}</td>
+                    <td>${stat['in-progress']}</td>
+                    <td>${stat['waiting recheck&approve']}</td>
+                    <td>${stat['new task'] + stat['plan to do']}</td>
+                    <td>${stat['meeting']}</td>
+                    <td>${stat['hold']}</td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <small>${progress}%</small>
+                    </td>
+                `;
+                teamTable.appendChild(row);
+
+                // Add detail row
+                const detailRow = document.createElement('tr');
+                detailRow.className = 'detail-row';
+                const personTasks = allTasks.filter(t => t.person === stat.person);
+                let detailHTML = '<td colspan="8"><div class="detail-content"><ul class="task-list">';
+                personTasks.forEach(t => {
+                    detailHTML += `<li>
+                        <span>
+                            <a href="${t.url}" target="_blank" class="task-link">${t.name}</a>
+                            ${t.priority ? `<span class="priority-high">${t.priority.toUpperCase()}</span>` : ''}
+                        </span>
+                        <span class="status-badge ${getStatusBadgeClass(t.status)}">${t.status}</span>
+                    </li>`;
+                });
+                detailHTML += '</ul></div></td>';
+                detailRow.innerHTML = detailHTML;
+                teamTable.appendChild(detailRow);
+
+                // Toggle expand
+                row.addEventListener('click', () => {
+                    row.classList.toggle('expandable-row');
+                    detailRow.classList.toggle('open');
+                    row.querySelector('.expand-icon').classList.toggle('open');
+                });
+            });
+
+            // Render Waiting Approve Table
+            const waitingApproveTable = document.querySelector('#waitingApproveTable tbody');
+            waitingApproveTable.innerHTML = '';
+            const waitingTasks = allTasks.filter(t => t.status === 'waiting recheck&approve');
+            waitingTasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><a href="${task.url}" target="_blank" class="task-link">${task.name}</a></td>
+                    <td>${task.person}</td>
+                    <td><span class="status-badge ${getStatusBadgeClass(task.status)}">${task.status}</span></td>
+                    <td><a href="${task.url}" target="_blank" class="clickup-btn">เปิด ClickUp</a></td>
+                `;
+                waitingApproveTable.appendChild(row);
+            });
+            if (waitingTasks.length === 0) {
+                waitingApproveTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--sub);">ไม่มีงานรอตรวจสอบ</td></tr>';
+            }
+
+            // Render Overdue Table
+            const overdueTable = document.querySelector('#overdueTable tbody');
+            overdueTable.innerHTML = '';
+            const overdueTasks = allTasks.filter(t => isOverdue(t.due));
+            overdueTasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><a href="${task.url}" target="_blank" class="task-link">${task.name}</a></td>
+                    <td>${task.person}</td>
+                    <td>${formatDate(task.due)}</td>
+                    <td><span class="status-badge status-overdue">OVERDUE</span></td>
+                    <td><a href="${task.url}" target="_blank" class="clickup-btn">เปิด ClickUp</a></td>
+                `;
+                overdueTable.appendChild(row);
+            });
+            if (overdueTasks.length === 0) {
+                overdueTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--sub);">ไม่มีงานเกินกำหนด</td></tr>';
+            }
+
+            document.getElementById('overdueCount').textContent = overdueTasks.length;
+            document.getElementById('waitingApproveCount').textContent = waitingTasks.length;
+
+            renderCharts(personStats, allTasks);
+        }
+
+        function renderCharts(personStats, allTasks) {
+            const ctx = (id) => document.getElementById(id).getContext('2d');
+
+            // 1. Tasks Per Person (Horizontal Bar)
+            const people = Object.values(personStats).map(s => s.person);
+            const taskCounts = Object.values(personStats).map(s => s.total);
+            new Chart(ctx('tasksPerPersonChart'), {
+                type: 'bar',
+                data: {
+                    labels: people,
+                    datasets: [{
+                        label: 'จำนวนงาน',
+                        data: taskCounts,
+                        backgroundColor: '#00A88F',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+
+            // 2. Status Distribution (Doughnut)
+            const statusDist = {};
+            allTasks.forEach(t => {
+                statusDist[t.status] = (statusDist[t.status] || 0) + 1;
+            });
+            const statusLabels = Object.keys(statusDist);
+            const statusValues = Object.values(statusDist);
+            const statusBackgroundColors = statusLabels.map(s => {
+                const colors = {
+                    'in-progress': '#00A88F',
+                    'plan to do': '#A78BFA',
+                    'new task': '#93C5FD',
+                    'meeting': '#F472B6',
+                    'waiting recheck&approve': '#F59E0B',
+                    'hold': '#9CA3AF',
+                    'waiting informations': '#6366F1'
+                };
+                return colors[s] || '#9CA3AF';
+            });
+            new Chart(ctx('statusDistributionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusValues,
+                        backgroundColor: statusBackgroundColors,
+                        borderColor: '#FFF',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { font: { size: 12 }, padding: 15 }
+                        }
+                    }
+                }
+            });
+
+            // 3. Status Per Person (Stacked Bar)
+            const statusKeys = ['in-progress', 'plan to do', 'new task', 'meeting', 'waiting recheck&approve', 'hold', 'waiting informations'];
+            const statusDatasets = statusKeys.map((status, idx) => ({
+                label: status,
+                data: Object.values(personStats).map(s => s[status] || 0),
+                backgroundColor: statusBackgroundColors[statusLabels.indexOf(status)] || '#9CA3AF'
+            }));
+            new Chart(ctx('statusPerPersonChart'), {
+                type: 'bar',
+                data: {
+                    labels: people,
+                    datasets: statusDatasets
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { stacked: true } },
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } }
+                }
+            });
+
+            // 4. Workload Distribution (Polar)
+            new Chart(ctx('workloadChart'), {
+                type: 'polarArea',
+                data: {
+                    labels: people,
+                    datasets: [{
+                        label: 'จำนวนงาน',
+                        data: taskCounts,
+                        backgroundColor: [
+                            'rgba(0, 168, 143, 0.5)',
+                            'rgba(107, 92, 231, 0.5)',
+                            'rgba(230, 168, 23, 0.5)',
+                            'rgba(217, 79, 79, 0.5)'
+                        ],
+                        borderColor: ['#00A88F', '#6B5CE7', '#E6A817', '#D94F4F'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // ===================== CLIENT PROJECTS =====================
+
+        function renderClientProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = '';
+
+            // Calculate KPI values
+            const clientEntries = Object.entries(clientProjectsData);
+            let totalValue = 0;
+            let clientsWithBudget = 0;
+            let totalTasks = 0;
+
+            // Create array with calculated values and sort by value descending
+            const projectsWithValues = clientEntries.map(([clientName, data]) => {
+                const projectTotal = data.tasks.reduce((sum, task) => sum + (task.value || 0), 0);
+                totalValue += projectTotal;
+                if (projectTotal > 0) clientsWithBudget++;
+                totalTasks += data.tasks.length;
+                return {
+                    clientName,
+                    data,
+                    projectTotal,
+                    taskCount: data.tasks.length
+                };
+            }).sort((a, b) => b.projectTotal - a.projectTotal);
+
+            // Update KPI cards
+            document.getElementById('clientCount').textContent = clientEntries.length;
+            document.getElementById('clientTaskCount').textContent = totalTasks;
+            document.getElementById('totalProjectValue').textContent = `฿${totalValue.toLocaleString('th-TH')}`;
+            document.getElementById('projectsWithBudget').textContent = clientsWithBudget;
+
+            // Render project cards sorted by value
+            projectsWithValues.forEach(({clientName, data, projectTotal, taskCount}) => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                const valueDisplay = projectTotal > 0 ? `฿${projectTotal.toLocaleString('th-TH')}` : 'ยังไม่มีงบ';
+                card.innerHTML = `
+                    <div class="project-name">${clientName}</div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">${taskCount}</div>
+                            <div class="stat-label">Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" style="color: var(--teal); font-size: 1rem;">${valueDisplay}</div>
+                            <div class="stat-label">Value</div>
+                        </div>
+                    </div>
+                `;
+                card.addEventListener('click', () => openProjectModal(clientName, data));
+                grid.appendChild(card);
+            });
+        }
+
+        function openProjectModal(clientName, data) {
+            const modal = document.getElementById('projectModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            title.textContent = clientName;
+
+            if (data.tasks.length === 0) {
+                body.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--sub);">ไม่มีงานในโปรเจคนี้</p>';
+            } else {
+                // Group tasks by status
+                const statusGroups = {};
+                data.tasks.forEach(task => {
+                    if (!statusGroups[task.status]) {
+                        statusGroups[task.status] = [];
+                    }
+                    statusGroups[task.status].push(task);
+                });
+
+                let html = '<div class="status-category-group">';
+                let totalProjectValue = 0;
+
+                // Render each status group
+                for (const [status, tasks] of Object.entries(statusGroups)) {
+                    const statusTotal = tasks.reduce((sum, task) => sum + (task.value || 0), 0);
+                    totalProjectValue += statusTotal;
+                    const color = clientStatusColors[status] || '#9CA3AF';
+
+                    html += `
+                        <div class="status-category-group" style="margin-bottom: 1.5rem;">
+                            <div class="status-category-title" style="background-color: ${color}20; border-left: 3px solid ${color}; padding-left: 0.75rem; margin-bottom: 0.75rem;">
+                                ${status} <span style="color: var(--sub); font-size: 0.9rem;">${tasks.length} task${tasks.length > 1 ? 's' : ''}</span>
+                                <span style="float: right; color: var(--teal); font-weight: bold;">฿${statusTotal.toLocaleString('th-TH')}</span>
+                            </div>
+                            <div class="category-items">
+                    `;
+
+                    tasks.forEach(task => {
+                        const taskValue = task.value || 0;
+                        html += `
+                            <div class="category-item" style="border-left: 2px solid ${color}; padding-left: 0.75rem; margin-bottom: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="flex: 1;">
+                                        <a href="${task.url}" target="_blank" class="task-link" style="text-decoration: none; color: var(--text);">
+                                            ${task.name}
+                                        </a>
+                                    </div>
+                                    <div style="color: var(--teal); font-weight: bold; white-space: nowrap; margin-left: 1rem;">
+                                        ฿${taskValue.toLocaleString('th-TH')}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div style="border-top: 2px solid var(--teal); padding-top: 1rem; margin-top: 1rem; text-align: right;">
+                        <div style="font-size: 0.95rem; color: var(--sub);">มูลค่างานรวมโปรเจค:</div>
+                        <div style="font-size: 1.5rem; color: var(--teal); font-weight: bold;">฿${totalProjectValue.toLocaleString('th-TH')}</div>
+                    </div>
+                </div>`;
+
+                body.innerHTML = html;
+            }
+
+            modal.classList.add('open');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').classList.remove('open');
+        }
+
+        // ===================== CEO CALENDAR DATA =====================
+
+        const ceoCalendarData = [
+            {
+                summary: 'RADA x P Solar Supplier-Production คนที่ 1 (Online)',
+                start: '2026-04-17T10:30:00+07:00',
+                end: '2026-04-17T11:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Supapong, Admin, Varintorn, Orn'
+            },
+            {
+                summary: 'RADA x P Solar Supplier-Production คนที่ 2 (Online)',
+                start: '2026-04-17T11:00:00+07:00',
+                end: '2026-04-17T11:30:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Supapong, Admin, Varintorn, Orn'
+            },
+            {
+                summary: 'RADA x P Solar Supplier-Production คนที่ 3 (Online)',
+                start: '2026-04-17T11:30:00+07:00',
+                end: '2026-04-17T12:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Supapong, Admin, Varintorn, Orn'
+            },
+            {
+                summary: 'RADA x SOIHA I Monthly Meet Mar\'2026 (Online)',
+                start: '2026-04-17T13:00:00+07:00',
+                end: '2026-04-17T14:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Jomsuda, Branding Team, Orn'
+            },
+            {
+                summary: 'Meeting MTeX Young Talent Bootcamp#2',
+                start: '2026-04-17T18:00:00+07:00',
+                end: '2026-04-17T20:30:00+07:00',
+                type: 'onsite',
+                location: '3DS Interactive',
+                meetUrl: null,
+                attendees: 'Orn (external event)'
+            },
+            {
+                summary: 'ACC Weekly Meet Follow up - Due Payment',
+                start: '2026-04-20T18:00:00+07:00',
+                end: '2026-04-20T19:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'ACC Team, Orn'
+            },
+            {
+                summary: 'RADA x Arcadia Foods I CPAS (Online)',
+                start: '2026-04-21T11:00:00+07:00',
+                end: '2026-04-21T12:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Orn'
+            },
+            {
+                summary: 'POSxPAY I Weekly Update Development Team',
+                start: '2026-04-21T18:00:00+07:00',
+                end: '2026-04-21T19:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Dev Team, Orn'
+            },
+            {
+                summary: 'RADA x P Solar I นำเสนอ Video Production Concepts (Online)',
+                start: '2026-04-22T15:00:00+07:00',
+                end: '2026-04-22T16:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Orn'
+            },
+            {
+                summary: 'RADA x Arcadia Foods I นำเสนอแผนงานกับทีมไอที (Online)',
+                start: '2026-04-23T13:00:00+07:00',
+                end: '2026-04-23T14:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Orn'
+            },
+            {
+                summary: 'RADA x Finn Barber I นำเสนอ Solution & พูดคุยแผนธุรกิจ (Onsite)',
+                start: '2026-04-23T14:00:00+07:00',
+                end: '2026-04-23T17:00:00+07:00',
+                type: 'onsite',
+                location: 'RADA Office',
+                meetUrl: null,
+                attendees: 'Orn, Finn Barber Team'
+            },
+            {
+                summary: 'RADA x ZIRA Collagen I นำเสนอ Pitch Desk (Onsite)',
+                start: '2026-04-24T11:00:00+07:00',
+                end: '2026-04-24T12:00:00+07:00',
+                type: 'onsite',
+                location: 'Q Studio',
+                meetUrl: null,
+                attendees: 'Orn'
+            },
+            {
+                summary: 'ACC Weekly Meet Follow up - Due Payment',
+                start: '2026-04-27T18:00:00+07:00',
+                end: '2026-04-27T19:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'ACC Team, Orn'
+            },
+            {
+                summary: 'POSxPAY I Weekly Update Development Team',
+                start: '2026-04-28T18:00:00+07:00',
+                end: '2026-04-28T19:00:00+07:00',
+                type: 'online',
+                location: 'Google Meet',
+                meetUrl: 'https://meet.google.com',
+                attendees: 'Dev Team, Orn'
+            }
+        ];
+
+        function renderCEOCalendar() {
+            const container = document.getElementById('calendarContainer');
+            const todayStr = '2026-04-17';
+
+            // Group events by date
+            const grouped = {};
+            ceoCalendarData.forEach(evt => {
+                const dateStr = evt.start.substring(0, 10);
+                if (!grouped[dateStr]) grouped[dateStr] = [];
+                grouped[dateStr].push(evt);
+            });
+
+            // KPI counts
+            const totalMeetings = ceoCalendarData.length;
+            const todayMeetings = (grouped[todayStr] || []).length;
+            const onlineCount = ceoCalendarData.filter(e => e.type === 'online').length;
+            const onsiteCount = ceoCalendarData.filter(e => e.type === 'onsite').length;
+
+            document.getElementById('calTotalMeetings').textContent = totalMeetings;
+            document.getElementById('calTodayMeetings').textContent = todayMeetings;
+            document.getElementById('calOnline').textContent = onlineCount;
+            document.getElementById('calOnsite').textContent = onsiteCount;
+
+            const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+            const thaiMonths = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+            function formatTime(isoStr) {
+                const d = new Date(isoStr);
+                return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false });
+            }
+
+            let html = '';
+            const sortedDates = Object.keys(grouped).sort();
+
+            sortedDates.forEach(dateStr => {
+                const d = new Date(dateStr + 'T00:00:00+07:00');
+                const dayName = thaiDays[d.getDay()];
+                const dayNum = d.getDate();
+                const monthName = thaiMonths[d.getMonth() + 1];
+                const isToday = dateStr === todayStr;
+                const events = grouped[dateStr];
+
+                html += `
+                    <div class="calendar-day-group">
+                        <div class="calendar-day-header ${isToday ? 'today' : ''}">
+                            <span class="day-badge">${dayNum}</span>
+                            <span>วัน${dayName} ${dayNum} ${monthName} ${d.getFullYear() + 543} ${isToday ? '— วันนี้' : ''}</span>
+                            <span style="margin-left: auto; font-size: 0.8rem; opacity: 0.7;">${events.length} นัด</span>
+                        </div>
+                `;
+
+                events.forEach(evt => {
+                    const startTime = formatTime(evt.start);
+                    const endTime = formatTime(evt.end);
+                    const isOnsite = evt.type === 'onsite';
+
+                    html += `
+                        <div class="calendar-event">
+                            <div class="time-block">
+                                <div class="time-start">${startTime}</div>
+                                <div class="time-sep">ถึง</div>
+                                <div class="time-end">${endTime}</div>
+                            </div>
+                            <div class="event-content">
+                                <div class="event-title">${evt.summary}</div>
+                                <div class="event-meta">
+                                    <span class="location-badge ${isOnsite ? 'onsite' : 'online'}">
+                                        ${isOnsite ? '📍' : '💻'} ${evt.location}
+                                    </span>
+                                    ${evt.meetUrl ? `<a href="${evt.meetUrl}" target="_blank" class="meet-link">🔗 Join Meet</a>` : ''}
+                                </div>
+                                <div class="event-attendees">👥 ${evt.attendees}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            if (ceoCalendarData.length === 0) {
+                html = '<div class="calendar-empty">ไม่มีนัดประชุมในช่วงนี้</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ===================== INIT =====================
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTeamDashboard();
+        });
+
+        document.getElementById('projectModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('projectModal')) {
+                closeProjectModal();
+            }
+        });
+
+        // ===================== PITCHING STAGE =====================
+        const pitchingDeals = [
+{"name":"Asai Hospital","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ex9gp0r","list":"AE"},
+{"name":"ธนพิริยะ","status":"lead","priority":null,"url":"https://app.clickup.com/t/86ewwp8c9","list":"AE"},
+{"name":"Thannapiriya Supper Market","status":"to do","priority":null,"url":"https://app.clickup.com/t/86ewwmyrz","list":"CRM Approach"},
+{"name":"Chata ชะตา by คุณตั้ม Alltimage","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ewn1bun","list":"AE"},
+{"name":"Energy Dynamics","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ewmpy9y","list":"AE"},
+{"name":"Proen Corp","status":"lead","priority":null,"url":"https://app.clickup.com/t/86ewmek0r","list":"AE"},
+{"name":"Proen Telebiz","status":"lead","priority":null,"url":"https://app.clickup.com/t/86ewmejw2","list":"AE"},
+{"name":"PK Fence","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ewhy5zw","list":"AE"},
+{"name":"อ.ปริญ Project วอลเปเปอร์เสริมดวง","status":"call/approach","priority":null,"url":"https://app.clickup.com/t/86ewecf9q","list":"AE"},
+{"name":"O.T. Machinery คุณซิน","status":"call/approach","priority":null,"url":"https://app.clickup.com/t/86eweccmf","list":"AE"},
+{"name":"Bodic Safety (รอพิจารณา)","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ewec8ng","list":"AE"},
+{"name":"P Solar Engineering ค่าออกแบบเสื้อ","status":"qt","priority":"urgent","url":"https://app.clickup.com/t/86ewe4gz4","list":"AE"},
+{"name":"Teddy Shabu (กำลังย้ายร้าน)","status":"fail","priority":null,"url":"https://app.clickup.com/t/86ewe4ax5","list":"AE"},
+{"name":"ลายซิ่น ศิลป์แห่งผ้า","status":"call/approach","priority":null,"url":"https://app.clickup.com/t/86ewaqkce","list":"AE"},
+{"name":"K.S.IDEAL GROUP","status":"qt","priority":"high","url":"https://app.clickup.com/t/86ewaq6ng","list":"AE"},
+{"name":"Taro Izakaya นาคนิวาส7","status":"present solution","priority":"high","url":"https://app.clickup.com/t/86ewaq3td","list":"AE"},
+{"name":"DR. Mom — ไม่ต่อสัญญา","status":"fail","priority":"normal","url":"https://app.clickup.com/t/86ewaq3kx","list":"AE"},
+{"name":"RADA x Ryan | Herro Banner for Website","status":"qt","priority":"normal","url":"https://app.clickup.com/t/86ewaq2yu","list":"AE"},
+{"name":"FiFi Social Club","status":"call/approach","priority":"normal","url":"https://app.clickup.com/t/86ewapquu","list":"AE"},
+{"name":"Grand Excel","status":"call/approach","priority":"normal","url":"https://app.clickup.com/t/86ewapp27","list":"AE"},
+{"name":"Aestheta & Aestheta Wellness","status":"present solution","priority":null,"url":"https://app.clickup.com/t/86ewapmhz","list":"AE"},
+{"name":"S.V.Commercial","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ewa60u5","list":"AE"},
+{"name":"ยูเนี่ยน แอพพลาย","status":"lead","priority":null,"url":"https://app.clickup.com/t/86ewa60e7","list":"AE"},
+{"name":"บอส คาร์ตัน","status":"lead","priority":null,"url":"https://app.clickup.com/t/86ewa600q","list":"AE"},
+{"name":"Smart Innovative (Privage CRM Starter)","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew7xvrc","list":"AE"},
+{"name":"Finn Barber + Finn Salon | Broadcast","status":"retention","priority":null,"url":"https://app.clickup.com/t/86ew7mdwv","list":"AE"},
+{"name":"มาหาหน่อย หม่าล่าทั่ง | Banner","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew7md7f","list":"AE"},
+{"name":"มาหาหน่อย หม่าล่าทั่ง | Website","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew7mcxw","list":"AE"},
+{"name":"มาหาหน่อย หม่าล่าทั่ง | Content","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew7mcbt","list":"AE"},
+{"name":"Hyundai/Starke BG 2M. for 2026","status":"fail","priority":"high","url":"https://app.clickup.com/t/86ew7mbu9","list":"AE"},
+{"name":"PK | Meta Ads + Fee","status":"retention","priority":null,"url":"https://app.clickup.com/t/86ew7mb7m","list":"AE"},
+{"name":"Gee Solar | Meta Ads + Fee","status":"retention","priority":null,"url":"https://app.clickup.com/t/86ew7m7wa","list":"AE"},
+{"name":"X-TREME | Website MWE Standard","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew7ckwd","list":"AE"},
+{"name":"Successmore | Wellness platform","status":"present solution","priority":null,"url":"https://app.clickup.com/t/86ew77ww5","list":"AE"},
+{"name":"Taro Izakaya นาคนิวาส7 | Meta Ads","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew77rgh","list":"AE"},
+{"name":"แสงรุ่งกรุ๊ป | Company Profile 3 เล่ม","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew77r7h","list":"AE"},
+{"name":"M-Tech Auto Air","status":"present solution","priority":null,"url":"https://app.clickup.com/t/86ew77q15","list":"AE"},
+{"name":"Taro Izakaya นาคนิวาส7 | Content & KOL","status":"qt","priority":null,"url":"https://app.clickup.com/t/86ew6zmq6","list":"AE"},
+{"name":"แสงรุ่งกรุ๊ป | Meta Ads 15K x 6 Month","status":"qt","priority":"high","url":"https://app.clickup.com/t/86ew6h4z1","list":"AE"},
+{"name":"Biocher, 2Sis, the sis hair | Card Message","status":"invoice","priority":"high","url":"https://app.clickup.com/t/86ew2d0wq","list":"AE"},
+{"name":"Srifa Bakery คุณเอฟ","status":"qt","priority":"high","url":"https://app.clickup.com/t/86ew2d06w","list":"AE"},
+{"name":"M-TECH AUTO AIR","status":"present solution","priority":"high","url":"https://app.clickup.com/t/86ew2czbr","list":"AE"},
+{"name":"Nobicha K.Koi — ยังไม่พร้อม","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evrvdnn","list":"AE"},
+{"name":"Fit4U สนใจระบบ CRM","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evpzd4w","list":"AE"},
+{"name":"Chocadoof","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evpzb9d","list":"AE"},
+{"name":"Vet Planet | Graphic Content","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evk1abb","list":"AE"},
+{"name":"CU Smile (CRM)","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evk1971","list":"AE"},
+{"name":"Solspec | โซล สเปค","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evjt3u0","list":"AE"},
+{"name":"K Solar | เคโซล่า เทคโนโลยี","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evjt3b4","list":"AE"},
+{"name":"K.Pang Kushiro","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evj62ve","list":"AE"},
+{"name":"สหการประมูล","status":"fail","priority":"high","url":"https://app.clickup.com/t/86evgz4w3","list":"AE"},
+{"name":"Chill Chill Phone (K.เปียโน)","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evg7ecj","list":"AE"},
+{"name":"Engitech Power","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evfxq1q","list":"AE"},
+{"name":"WRC Energy | Website CMS Wordpress","status":"invoice","priority":"high","url":"https://app.clickup.com/t/86evfvz30","list":"AE"},
+{"name":"Sol Star | โซลสตาร์","status":"present solution","priority":"high","url":"https://app.clickup.com/t/86evfvy9q","list":"AE"},
+{"name":"แสงรุ่งกรุ๊ป | SEO Article 3 Month","status":"invoice","priority":"high","url":"https://app.clickup.com/t/86evfpcum","list":"AE"},
+{"name":"Harvest To The Moon","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evfpb2w","list":"AE"},
+{"name":"PUREYO — ยังไม่สนใจ CRM","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evfcup4","list":"AE"},
+{"name":"Sabiengsugar — ใช้ CRM Choco แล้ว","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evfcrrm","list":"AE"},
+{"name":"HONGTAE FOODS (สนใจ CRM)","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evfcpgh","list":"AE"},
+{"name":"PATANA INTERCOOL | Catalog Design","status":"qt","priority":"low","url":"https://app.clickup.com/t/86evfabnm","list":"AE"},
+{"name":"หจก.สมศักดิ์วิศวภัณฑ์ | Website, Company Profile","status":"call/approach","priority":"normal","url":"https://app.clickup.com/t/86evfa6qw","list":"AE"},
+{"name":"Thai Solar Way","status":"call/approach","priority":"high","url":"https://app.clickup.com/t/86evede3a","list":"AE"},
+{"name":"NKK Skin (CRM)","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86eve0wj8","list":"AE"},
+{"name":"Body Lab — ยังไม่พร้อม","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evdz97u","list":"AE"},
+{"name":"Lake Park 3-4 M. for 2026","status":"present solution","priority":"high","url":"https://app.clickup.com/t/86evdz1c8","list":"AE"},
+{"name":"PTK Logistics | Company Profile","status":"qt","priority":"low","url":"https://app.clickup.com/t/86evdy8h2","list":"AE"},
+{"name":"GoDiGit (รอทีม Consults)","status":"qt","priority":"high","url":"https://app.clickup.com/t/86evcy7t1","list":"AE"},
+{"name":"V.L.Natural | Revise Web, Content","status":"call/approach","priority":"high","url":"https://app.clickup.com/t/86evcz9u6","list":"AE"},
+{"name":"Zojirushi — ขอถอนตัว","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evcz9dj","list":"AE"},
+{"name":"Hyundai/Starke BG 2M. for 2026 (dup)","status":"fail","priority":"high","url":"https://app.clickup.com/t/86evcz8hb","list":"AE"},
+{"name":"บ้านประกัน — ยังไม่พร้อม","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evcy7td","list":"AE"},
+{"name":"Sakaiba","status":"call/approach","priority":"low","url":"https://app.clickup.com/t/86evcy7ta","list":"AE"},
+{"name":"บ้านผ้าม่าน คุณเต้ คุณเล็ก","status":"fail","priority":"low","url":"https://app.clickup.com/t/86evctnep","list":"AE"},
+{"name":"Cava For First Meet","status":"call/approach","priority":null,"url":"https://app.clickup.com/t/86evd0n01","list":"AE"},
+{"name":"Worksheet - Solution & Budget Plan","status":"present solution","priority":null,"url":"https://app.clickup.com/t/86evd0meh","list":"AE"},
+{"name":"Solar World 98,124 — เซ็นยืนยันแล้ว","status":"fail","priority":null,"url":"https://app.clickup.com/t/86evd0qpj","list":"AE"}
+        ];
+
+        // Pitching statuses config
+        const pitchStatusConfig = {
+            'lead':             {label:'Lead',           color:'#6B5CE7', badgeClass:'badge-purple',  order:1},
+            'call/approach':    {label:'Call / Approach', color:'#4299E1', badgeClass:'badge-blue',    order:2},
+            'present solution': {label:'Present Solution',color:'#E67E22',badgeClass:'badge-orange',  order:3},
+            'qt':               {label:'Quotation Sent',  color:'#E6A817',badgeClass:'badge-yellow',  order:4},
+            'invoice':          {label:'Invoice (Won!)',  color:'#00A88F', badgeClass:'badge-green',   order:5},
+            'retention':        {label:'Retention',       color:'#00BFA5', badgeClass:'badge-green',   order:6},
+            'fail':             {label:'Fail / Lost',     color:'#D94F4F', badgeClass:'badge-red',     order:99},
+            'to do':            {label:'To Do',           color:'#A0AEC0', badgeClass:'badge-gray',    order:0}
+        };
+
+        function renderPitchingStage() {
+            const active = pitchingDeals.filter(d => d.status !== 'fail');
+            const failed = pitchingDeals.filter(d => d.status === 'fail');
+            const invoiced = pitchingDeals.filter(d => d.status === 'invoice');
+            const retained = pitchingDeals.filter(d => d.status === 'retention');
+
+            // Status counts
+            const statusCounts = {};
+            pitchingDeals.forEach(d => {
+                const cfg = pitchStatusConfig[d.status] || {label: d.status};
+                statusCounts[cfg.label] = (statusCounts[cfg.label] || 0) + 1;
+            });
+
+            // KPIs
+            document.getElementById('pitchKpiRow').innerHTML = `
+                <div class="kpi-card"><div class="kpi-label">Deal ทั้งหมด</div><div class="kpi-value">${pitchingDeals.length}</div></div>
+                <div class="kpi-card"><div class="kpi-label">Active Pipeline</div><div class="kpi-value highlight">${active.length}</div></div>
+                <div class="kpi-card"><div class="kpi-label">Quotation Sent</div><div class="kpi-value" style="color:var(--yellow)">${pitchingDeals.filter(d=>d.status==='qt').length}</div></div>
+                <div class="kpi-card"><div class="kpi-label">Present Solution</div><div class="kpi-value" style="color:var(--orange)">${pitchingDeals.filter(d=>d.status==='present solution').length}</div></div>
+                <div class="kpi-card"><div class="kpi-label">Invoice (Won)</div><div class="kpi-value" style="color:var(--green)">${invoiced.length}</div></div>
+                <div class="kpi-card"><div class="kpi-label">Retention</div><div class="kpi-value" style="color:var(--teal)">${retained.length}</div></div>
+                <div class="kpi-card"><div class="kpi-label">Fail / Lost</div><div class="kpi-value" style="color:var(--red)">${failed.length}</div></div>
+            `;
+
+            // Alerts
+            document.getElementById('pitchAlerts').innerHTML = `
+                <div class="alert-card yellow">
+                    <div class="alert-icon">💪</div>
+                    <div class="alert-content"><h3>Active Deals</h3><p style="color:var(--accent)">${active.length}</p></div>
+                </div>
+                <div class="alert-card red">
+                    <div class="alert-icon">❌</div>
+                    <div class="alert-content"><h3>Deals Lost</h3><p>${failed.length}</p></div>
+                </div>
+            `;
+
+            // Chart 1: Status Distribution (Doughnut)
+            const sLabels = Object.keys(statusCounts);
+            const sValues = Object.values(statusCounts);
+            const sColors = sLabels.map(l => {
+                const entry = Object.values(pitchStatusConfig).find(c => c.label === l);
+                return entry ? entry.color : '#CBD5E0';
+            });
+            new Chart(document.getElementById('pitchStatusChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: sLabels, datasets: [{ data: sValues, backgroundColor: sColors, borderWidth: 2, borderColor: '#fff' }] },
+                options: { cutout: '50%', plugins: { legend: { position: 'right', labels: { font: { size: 13 } } } }, responsive: true, maintainAspectRatio: false }
+            });
+
+            // Chart 2: Priority of active deals (Bar)
+            const priCounts = { urgent: 0, high: 0, normal: 0, low: 0, none: 0 };
+            active.forEach(d => { priCounts[d.priority || 'none']++; });
+            new Chart(document.getElementById('pitchPriorityChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Urgent', 'High', 'Normal', 'Low', 'ไม่ระบุ'],
+                    datasets: [{ data: [priCounts.urgent, priCounts.high, priCounts.normal, priCounts.low, priCounts.none],
+                        backgroundColor: ['#D94F4F','#E67E22','#4299E1','#A0AEC0','#E2E8F0'], borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+
+            // Active deals table (sorted by status order)
+            const activeTable = document.querySelector('#pitchActiveTable tbody');
+            const sortedActive = active.sort((a, b) => {
+                const oa = (pitchStatusConfig[a.status]||{order:50}).order;
+                const ob = (pitchStatusConfig[b.status]||{order:50}).order;
+                return ob - oa; // Invoice first, then retention, qt, present, call, lead
+            });
+            activeTable.innerHTML = '';
+            sortedActive.forEach(d => {
+                const cfg = pitchStatusConfig[d.status] || { label: d.status, badgeClass: 'badge-gray' };
+                const brand = d.name.split(/\s*[\|I]\s*/)[0].trim();
+                const detail = d.name.includes('|') || d.name.includes(' I ') ? d.name.split(/\s*[\|I]\s+/).slice(1).join(' | ') : '—';
+                const priBadge = d.priority === 'urgent' ? '<span class="status-badge" style="background:rgba(217,79,79,.1);color:var(--red)">URGENT</span>' :
+                    d.priority === 'high' ? '<span class="status-badge" style="background:rgba(230,126,34,.1);color:var(--orange)">HIGH</span>' :
+                    d.priority === 'normal' ? '<span class="status-badge" style="background:rgba(66,153,225,.1);color:#4299E1">NORMAL</span>' :
+                    d.priority === 'low' ? '<span class="status-badge" style="background:rgba(160,174,192,.1);color:#718096">LOW</span>' : '—';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${brand}</strong></td>
+                    <td style="font-size:0.85rem;color:var(--sub)">${detail}</td>
+                    <td><span class="status-badge" style="background:${cfg.color}20;color:${cfg.color};font-weight:700">${cfg.label}</span></td>
+                    <td>${priBadge}</td>
+                    <td><a href="${d.url}" target="_blank" class="clickup-btn">เปิด ClickUp</a></td>
+                `;
+                activeTable.appendChild(row);
+            });
+
+            // Closed deals table
+            const closedTable = document.querySelector('#pitchClosedTable tbody');
+            closedTable.innerHTML = '';
+            failed.forEach(d => {
+                const brand = d.name.split(/\s*[\|—]\s*/)[0].trim();
+                const detail = d.name.length > brand.length ? d.name.substring(brand.length).replace(/^[\s|—]+/, '') : '—';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${brand}</strong></td>
+                    <td style="font-size:0.85rem;color:var(--sub)">${detail || '—'}</td>
+                    <td><span class="status-badge status-overdue">FAIL</span></td>
+                    <td><a href="${d.url}" target="_blank" class="clickup-btn">เปิด ClickUp</a></td>
+                `;
+                closedTable.appendChild(row);
+            });
+        }
+
+        renderPitchingStage();
+    </script>
+</body>
+</html>
