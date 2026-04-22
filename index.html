@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RADA RICHNESS — Daily Reports Archive</title>
+<style>
+:root {
+  --bg:#FFFFFF; --card:#F8FAFB; --text:#1A365D; --sub:#5A7A9A;
+  --accent:#00A88F; --blue:#1E3A5F; --border:#DCE4EC;
+  --yellow:#E6A817; --red:#D94F4F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#F0F4F8 0%,#E8EEF5 100%);color:var(--text);padding:24px;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto}
+.header{background:linear-gradient(135deg,var(--blue) 0%,var(--accent) 100%);color:#fff;padding:40px 36px;border-radius:16px;margin-bottom:24px;box-shadow:0 8px 24px rgba(26,54,93,0.15)}
+.header .brand{font-size:12px;letter-spacing:3px;opacity:0.85;margin-bottom:10px}
+.header h1{font-size:32px;font-weight:800;margin-bottom:8px}
+.header .sub{font-size:15px;opacity:0.95}
+
+.hero{background:linear-gradient(135deg,#FFFFFF 0%,#E6F7F3 100%);border-left:6px solid var(--accent);padding:26px 28px;border-radius:12px;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,168,143,0.08)}
+.hero .label{font-size:11px;letter-spacing:2px;color:var(--accent);font-weight:700;margin-bottom:8px}
+.hero h2{font-size:22px;font-weight:800;margin-bottom:8px;color:var(--text)}
+.hero p{font-size:14px;color:var(--sub);margin-bottom:16px;line-height:1.6}
+.hero .btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.5px;transition:all 0.2s}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(0,168,143,0.3)}
+.btn-primary:hover{background:#008a74;transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,168,143,0.4)}
+.btn-secondary{background:#fff;color:var(--text);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+
+.section-title{font-size:13px;letter-spacing:2px;color:var(--sub);margin:28px 0 14px 0;font-weight:700}
+.archive{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:#fff;padding:20px 22px;border-radius:12px;border:1px solid var(--border);transition:all 0.2s;text-decoration:none;color:inherit;display:block;box-shadow:0 2px 6px rgba(26,54,93,0.04)}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,54,93,0.12);border-color:var(--accent)}
+.card .date{font-size:11px;color:var(--sub);letter-spacing:1px;margin-bottom:6px;font-weight:600;text-transform:uppercase}
+.card .title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.4}
+.card .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:10px;padding:3px 10px;border-radius:10px;background:var(--card);color:var(--sub);font-weight:600}
+.tag.dashboard{background:#E6F7F3;color:var(--accent)}
+.tag.email{background:#E6F0F9;color:var(--blue)}
+.tag.today{background:var(--accent);color:#fff}
+
+.footer{text-align:center;padding:28px 24px;color:var(--sub);font-size:12px;margin-top:24px;border-top:1px solid var(--border);line-height:1.8}
+.footer b{color:var(--accent)}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+@media (max-width:700px){
+  .hero .btns{flex-direction:column}
+  .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="brand">RADA RICHNESS CO., LTD.</div>
+  <h1>📊 Daily Reports Archive</h1>
+  <div class="sub">คลังรายงานสรุปงานประจำวันของทีม RADA RICHNESS</div>
+</div>
+
+<div class="hero">
+  <div class="label">⭐ ลิงก์คงที่ — ใช้ส่งทีมได้ตลอด</div>
+  <h2>รายงานล่าสุด (Latest)</h2>
+  <p>บันทึกลิงก์นี้ไว้เลยครับ — ทุกวันจะอัปเดทเป็นรายงานล่าสุดอัตโนมัติ ไม่ต้องเปลี่ยน URL ทุกวัน</p>
+  <div class="btns">
+    <a href="RADA_Slot_Team_Dashboard_Latest.html" class="btn btn-primary">📊 Dashboard ล่าสุด</a>
+    <a href="RADA_Email_Preview_Latest.html" class="btn btn-secondary">📧 Email Preview ล่าสุด</a>
+  </div>
+</div>
+
+<div class="section-title">📅 ARCHIVE — รายงานย้อนหลัง (เรียงใหม่สุดก่อน)</div>
+
+<div class="archive">
+
+  <a href="RADA_Slot_Team_Dashboard_2026-04-22.html" class="card">
+    <div class="date">วันพุธ · 22 เมษายน 2569</div>
+    <div class="title">Daily Slot Team Dashboard</div>
+    <div class="meta"><span class="tag dashboard">Dashboard</span><span class="tag today">Today</span></div>
+  </a>
+
+  <a href="RADA_Email_Preview_22Apr2026.html" class="card">
+    <div class="date">วันพุธ · 22 เมษายน 2569</div>
+    <div class="title">Daily Slot Team — Email Preview</div>
+    <div class="meta"><span class="tag email">Email</span><span class="tag today">Today</span></div>
+  </a>
+
+  <a href="RADA_Slot_Team_Dashboard_21Apr2026.html" class="card">
+    <div class="date">วันอังคาร · 21 เมษายน 2569</div>
+    <div class="title">Daily Slot Team Dashboard</div>
+    <div class="meta"><span class="tag dashboard">Dashboard</span></div>
+  </a>
+
+  <a href="RADA_Email_Preview_21Apr2026.html" class="card">
+    <div class="date">วันอังคาร · 21 เมษายน 2569</div>
+    <div class="title">Daily Slot Team — Email Preview</div>
+    <div class="meta"><span class="tag email">Email</span></div>
+  </a>
+
+  <a href="RADA_Slot_Team_Dashboard_2026-04-17.html" class="card">
+    <div class="date">วันศุกร์ · 17 เมษายน 2569</div>
+    <div class="title">Daily Slot Team Dashboard</div>
+    <div class="meta"><span class="tag dashboard">Dashboard</span></div>
+  </a>
+
+  <a href="RADA_Executive_Dashboard_2026-04-17.html" class="card">
+    <div class="date">วันศุกร์ · 17 เมษายน 2569</div>
+    <div class="title">Executive Dashboard</div>
+    <div class="meta"><span class="tag dashboard">Executive</span></div>
+  </a>
+
+  <a href="daily_report_2026-04-17.html" class="card">
+    <div class="date">วันศุกร์ · 17 เมษายน 2569</div>
+    <div class="title">Daily Report</div>
+    <div class="meta"><span class="tag email">Report</span></div>
+  </a>
+
+  <a href="RADA_Slot_Team_Dashboard_16Apr2026.html" class="card">
+    <div class="date">วันพฤหัส · 16 เมษายน 2569</div>
+    <div class="title">Daily Slot Team Dashboard</div>
+    <div class="meta"><span class="tag dashboard">Dashboard</span></div>
+  </a>
+
+  <a href="RADA_Email_Preview_16Apr2026.html" class="card">
+    <div class="date">วันพฤหัส · 16 เมษายน 2569</div>
+    <div class="title">Daily Slot Team — Email Preview</div>
+    <div class="meta"><span class="tag email">Email</span></div>
+  </a>
+
+</div>
+
+<div class="footer">
+<b>RADA RICHNESS CO., LTD.</b> — Daily Reports Archive<br>
+🤖 Auto-generated by Claude · อัปเดททุกวันเวลา 20:00<br>
+<a href="https://github.com/ornrusada/rada-ceo">ดู Source บน GitHub</a>
+</div>
+</div>
+</body>
+</html>
