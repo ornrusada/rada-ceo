@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RADA RICHNESS — Slot Team Dashboard | 22 เมษายน 2569</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#FFFFFF; --card:#F8FAFB; --card2:#EEF2F6;
+  --text:#1A365D; --sub:#5A7A9A; --accent:#00A88F;
+  --green:#00A88F; --yellow:#E6A817; --red:#D94F4F;
+  --purple:#6B5CE7; --orange:#E67E22; --pink:#E84393;
+  --blue:#1E3A5F; --teal:#00BFA5; --border:#DCE4EC;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#F0F4F8 0%,#E8EEF5 100%);color:var(--text);padding:24px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.header{background:linear-gradient(135deg,var(--blue) 0%,var(--accent) 100%);color:#fff;padding:32px 36px;border-radius:16px;margin-bottom:24px;box-shadow:0 8px 24px rgba(26,54,93,0.15)}
+.header .brand{font-size:12px;letter-spacing:3px;opacity:0.85;margin-bottom:8px}
+.header h1{font-size:28px;font-weight:800;margin-bottom:6px}
+.header .sub{font-size:15px;opacity:0.95}
+.header .meta{font-size:13px;opacity:0.85;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.2)}
+.section-title{font-size:13px;letter-spacing:2px;color:var(--sub);margin:24px 0 12px 0;font-weight:700}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:20px}
+.kpi-grid.row2{grid-template-columns:repeat(3,1fr)}
+.kpi{background:var(--bg);padding:18px 20px;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(26,54,93,0.04);transition:all 0.2s;cursor:default}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(26,54,93,0.1)}
+.kpi .label{font-size:11px;color:var(--sub);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;font-weight:600}
+.kpi .value{font-size:32px;font-weight:800;line-height:1}
+.kpi.green .value{color:var(--green)} .kpi.yellow .value{color:var(--yellow)} .kpi.red .value{color:var(--red)}
+.kpi.blue .value{color:var(--blue)} .kpi.purple .value{color:var(--purple)} .kpi.teal .value{color:var(--teal)}
+.kpi.orange .value{color:var(--orange)}
+.kpi .extra{font-size:11px;color:var(--sub);margin-top:6px}
+.kpi.highlight{background:linear-gradient(135deg,#FFFFFF 0%,#F0F9F6 100%);border-left:4px solid var(--accent)}
+
+.alerts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.alert{background:var(--bg);padding:16px 18px;border-radius:12px;border:1px solid var(--border)}
+.alert.red{border-left:4px solid var(--red);background:#FEF6F6}
+.alert.yellow{border-left:4px solid var(--yellow);background:#FFFBF0}
+.alert.gray{border-left:4px solid #9CA3AF;background:#F5F6F8}
+.alert .t{font-size:13px;font-weight:700;margin-bottom:8px}
+.alert.red .t{color:var(--red)} .alert.yellow .t{color:var(--yellow)} .alert.gray .t{color:#6B7280}
+.alert .n{font-size:28px;font-weight:800}
+.alert.red .n{color:var(--red)} .alert.yellow .n{color:var(--yellow)} .alert.gray .n{color:#6B7280}
+.alert .desc{font-size:11px;color:var(--sub);margin-top:4px}
+
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.chart-card{background:var(--bg);padding:22px;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(26,54,93,0.04)}
+.chart-card h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px}
+.chart-card .chart-box{position:relative;height:300px}
+
+.table-card{background:var(--bg);padding:22px;border-radius:12px;border:1px solid var(--border);margin-bottom:18px;box-shadow:0 2px 8px rgba(26,54,93,0.04);overflow-x:auto}
+.table-card h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.table-card h3 .count{background:var(--accent);color:#fff;font-size:11px;padding:2px 10px;border-radius:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--card2);color:var(--text);text-align:left;padding:10px 12px;font-weight:700;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover{background:var(--card)}
+td a{color:var(--blue);text-decoration:none;font-weight:500}
+td a:hover{color:var(--accent);text-decoration:underline}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;color:#fff;letter-spacing:0.5px}
+.b-green{background:var(--green)} .b-yellow{background:var(--yellow)} .b-red{background:var(--red)}
+.b-blue{background:var(--blue)} .b-purple{background:var(--purple)} .b-orange{background:var(--orange)}
+.b-gray{background:#9CA3AF} .b-teal{background:var(--teal)} .b-pink{background:var(--pink)}
+
+.progress-wrap{display:flex;align-items:center;gap:8px}
+.progress-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;min-width:60px}
+.progress-fill{height:100%;border-radius:4px}
+.pct{font-size:11px;font-weight:700;min-width:32px}
+
+.footer{text-align:center;padding:24px;color:var(--sub);font-size:12px;margin-top:20px;border-top:1px solid var(--border)}
+.footer b{color:var(--accent)}
+
+@media (max-width:900px){
+  .kpi-grid,.kpi-grid.row2,.alerts,.chart-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="brand">RADA RICHNESS CO., LTD.</div>
+  <h1>📊 Slot Team Dashboard</h1>
+  <div class="sub">รายงานภาพรวมทีมประจำวัน — วันพุธที่ 22 เมษายน 2569 พ.ศ.</div>
+  <div class="meta">สำหรับ: CEO ออน (รุศดา น้อยทรง) · Workspace: RADA RICHNESS · รีเฟรชล่าสุด: 20:00</div>
+</div>
+
+<div class="section-title">📌 ภาพรวม — STATUS BREAKDOWN</div>
+<div class="kpi-grid">
+  <div class="kpi blue"><div class="label">งานทั้งหมด</div><div class="value">75</div><div class="extra">Active tasks</div></div>
+  <div class="kpi teal"><div class="label">กำลังทำ</div><div class="value">19</div><div class="extra">In-Progress</div></div>
+  <div class="kpi yellow"><div class="label">รอตรวจ</div><div class="value">4</div><div class="extra">Waiting Approve</div></div>
+  <div class="kpi purple"><div class="label">รองาน/ใหม่</div><div class="value">31</div><div class="extra">New + Plan + Info</div></div>
+  <div class="kpi pink" style="color:var(--pink)"><div class="label">Meeting</div><div class="value" style="color:var(--pink)">17</div><div class="extra">Scheduled/Past</div></div>
+  <div class="kpi"><div class="label">Hold</div><div class="value" style="color:#9CA3AF">3</div><div class="extra">On hold</div></div>
+</div>
+
+<div class="section-title">⭐ DAILY HIGHLIGHTS</div>
+<div class="kpi-grid row2">
+  <div class="kpi green highlight"><div class="label">✅ งานเสร็จวันนี้</div><div class="value">0</div><div class="extra">ยังไม่มีงานปิด</div></div>
+  <div class="kpi blue highlight"><div class="label">🆕 งานใหม่วันนี้</div><div class="value">0</div><div class="extra">ไม่มี task ใหม่</div></div>
+  <div class="kpi yellow highlight"><div class="label">📦 ค้างสะสม</div><div class="value">75</div><div class="extra">Carried over</div></div>
+</div>
+
+<div class="section-title">🚨 ALERTS</div>
+<div class="alerts">
+  <div class="alert yellow"><div class="t">⏰ งานรอ CEO ตรวจ</div><div class="n">4</div><div class="desc">ทั้งหมดเป็นของน้ำชา · 1 urgent+overdue</div></div>
+  <div class="alert red"><div class="t">⚠️ งาน Overdue</div><div class="n">38</div><div class="desc">บาส 20 · คาเทล 13 · น้ำชา 4 · อาร์ม 1</div></div>
+  <div class="alert gray"><div class="t">⏸ งาน Hold</div><div class="n">3</div><div class="desc">Privage ร้านค้า · POSxPAY · YPC (ทั้งหมดน้ำชา)</div></div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card"><h3>📊 จำนวน Task ทั้งหมดแต่ละคน</h3><div class="chart-box"><canvas id="chartBar"></canvas></div></div>
+  <div class="chart-card"><h3>🥯 สัดส่วนสถานะงานรวม</h3><div class="chart-box"><canvas id="chartDonut"></canvas></div></div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card"><h3>📚 เปรียบเทียบสถานะงานแยกรายคน (Stacked)</h3><div class="chart-box"><canvas id="chartStack"></canvas></div></div>
+  <div class="chart-card"><h3>🎯 Workload Distribution</h3><div class="chart-box"><canvas id="chartPolar"></canvas></div></div>
+</div>
+
+<div class="table-card">
+  <h3>👥 สรุปรายคน (Breakdown) <span class="count">8 คน</span></h3>
+  <table>
+    <thead><tr>
+      <th>สมาชิก</th><th style="text-align:center">ทั้งหมด</th><th style="text-align:center">เสร็จวันนี้</th>
+      <th style="text-align:center">กำลังทำ</th><th style="text-align:center">รอตรวจ</th>
+      <th style="text-align:center">รองาน</th><th style="text-align:center">Hold</th>
+      <th style="text-align:center">Overdue</th><th>สถานะความคืบหน้า</th>
+    </tr></thead>
+    <tbody>
+      <tr><td><b>น้ำชา</b> (Namcha)</td><td style="text-align:center">38</td><td style="text-align:center">0</td><td style="text-align:center">19</td><td style="text-align:center">4</td><td style="text-align:center">12</td><td style="text-align:center">3</td><td style="text-align:center"><span class="badge b-red">4</span></td>
+        <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:50%;background:var(--yellow)"></div></div><span class="pct" style="color:var(--yellow)">50%</span></div></td></tr>
+      <tr><td><b>บาส</b> (Bas)</td><td style="text-align:center">20</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">20</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-red">20</span></td>
+        <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:5%;background:var(--red)"></div></div><span class="pct" style="color:var(--red)">5%</span></div></td></tr>
+      <tr><td><b>คาเทล</b> (Katiel)</td><td style="text-align:center">13</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-red">13</span></td>
+        <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:10%;background:var(--red)"></div></div><span class="pct" style="color:var(--red)">10%</span></div><div style="font-size:10px;color:var(--sub);margin-top:3px">Meeting 13 งาน</div></td></tr>
+      <tr><td><b>อาร์ม</b> (Arm)</td><td style="text-align:center">4</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-red">1</span></td>
+        <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:70%;background:var(--green)"></div></div><span class="pct" style="color:var(--green)">70%</span></div><div style="font-size:10px;color:var(--sub);margin-top:3px">Meeting 4 งาน</div></td></tr>
+      <tr><td><b>ชมพู่</b> (Chompoo)</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-gray">0</span></td>
+        <td><div style="font-size:11px;color:var(--sub)">💤 ไม่มีงานในระบบ</div></td></tr>
+      <tr><td><b>ปัง</b> (Pang Jr)</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-gray">0</span></td>
+        <td><div style="font-size:11px;color:var(--sub)">💤 ไม่มีงานในระบบ</div></td></tr>
+      <tr><td><b>พลอย</b> (Ploy Jr)</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-gray">0</span></td>
+        <td><div style="font-size:11px;color:var(--sub)">💤 ไม่มีงานในระบบ</div></td></tr>
+      <tr><td><b>นะโม</b> (Namo Jr)</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center">0</td><td style="text-align:center"><span class="badge b-gray">0</span></td>
+        <td><div style="font-size:11px;color:var(--sub)">💤 ไม่มีงานในระบบ</div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h3>⏰ งานรอ CEO อนุมัติ <span class="count">4</span></h3>
+  <table>
+    <thead><tr><th>ชื่องาน</th><th>ผู้รับผิดชอบ</th><th>Priority</th><th>สถานะ</th><th>Due Date</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://app.clickup.com/t/86ew6z70k" target="_blank">Privage | บรีฟออกแบบป้ายพีพี บอร์ด + ขอราคางานพิมพ์</a></td><td>น้ำชา</td><td><span class="badge b-red">URGENT</span></td><td><span class="badge b-yellow">Waiting</span></td><td><span style="color:var(--red)">15/ม.ค. (Overdue)</span></td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86ew7bwq2" target="_blank">Privage I Survey IG CRM B2B</a></td><td>น้ำชา</td><td><span class="badge b-orange">HIGH</span></td><td><span class="badge b-yellow">Waiting</span></td><td>—</td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86ex9tar3" target="_blank">1688 I ส่งอีเมล/ไลน์ขอข้อมูลหา MCN</a></td><td>น้ำชา</td><td>—</td><td><span class="badge b-yellow">Waiting</span></td><td><span style="color:var(--red)">20/เม.ย. (Overdue)</span></td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86ex9t9mh" target="_blank">1688 I หาลิสต์ MCN</a></td><td>น้ำชา</td><td>—</td><td><span class="badge b-yellow">Waiting</span></td><td><span style="color:var(--red)">17/เม.ย. (Overdue)</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h3>📅 งาน Due วันนี้/พรุ่งนี้ (24-48 ชั่วโมง) <span class="count">5</span></h3>
+  <table>
+    <thead><tr><th>ชื่องาน</th><th>Slot</th><th>สถานะ</th><th>Due</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://app.clickup.com/t/86ex43959" target="_blank">Privage I Partner Pipeline รอบ 22/04/2026</a></td><td>น้ำชา</td><td><span class="badge b-purple">Plan to Do</span></td><td>22/เม.ย.</td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86exakbw6" target="_blank">RADA I หา Email Marketing</a></td><td>น้ำชา</td><td><span class="badge b-teal">In-Progress</span></td><td>22/เม.ย.</td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86exajz3g" target="_blank">ZIRA Collagen | Project Pitching 11:00-12:00</a></td><td>อาร์ม</td><td><span class="badge b-pink">Meeting</span></td><td>22/เม.ย.</td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86exajzxx" target="_blank">Celeb Medical | CRM | Training 14:00-15:00</a></td><td>อาร์ม</td><td><span class="badge b-pink">Meeting</span></td><td>23/เม.ย.</td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86exauhnr" target="_blank">YBN Thailand | จอง Training CRM 15:00-16:00</a></td><td>อาร์ม</td><td><span class="badge b-pink">Meeting</span></td><td>23/เม.ย.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <h3>⏸ งาน Hold <span class="count">3</span></h3>
+  <table>
+    <thead><tr><th>ชื่องาน</th><th>Slot</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://app.clickup.com/t/86ex40vgv" target="_blank">Privage I เช็คร้านที่เป็นลูกค้าพริเวจ + โทรสื่อสารขอใช้สถานที่</a></td><td>น้ำชา</td><td>—</td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86ew8pqmy" target="_blank">POSxPAY I ตัดต่อวิดีโอ 2 clip</a></td><td>น้ำชา</td><td><span class="badge b-orange">HIGH</span></td></tr>
+      <tr><td><a href="https://app.clickup.com/t/86ew8ptmu" target="_blank">YPC I หาเรฟ + ตัดคลิปสั้นโปรโมทโครงการ</a></td><td>น้ำชา</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+<b>RADA RICHNESS CO., LTD.</b> — Daily Slot Team Dashboard · 22 เมษายน 2569 พ.ศ.<br>
+🤖 Auto-generated by Claude · ข้อมูลดึงจาก ClickUp Workspace ID 90181987664
+</div>
+</div>
+
+<script>
+const data = {
+  members: ['น้ำชา','บาส','คาเทล','อาร์ม','ชมพู่','ปัง(Jr)','พลอย(Jr)','นะโม(Jr)'],
+  totals: [38,20,13,4,0,0,0,0],
+  status: {
+    inProgress: [19,0,0,0,0,0,0,0],
+    waiting:    [4,0,0,0,0,0,0,0],
+    newTask:    [1,20,0,0,0,0,0,0],
+    plan:       [10,0,0,0,0,0,0,0],
+    meeting:    [0,0,13,4,0,0,0,0],
+    hold:       [3,0,0,0,0,0,0,0],
+    info:       [1,0,0,0,0,0,0,0]
+  }
+};
+
+// Bar chart
+new Chart(document.getElementById('chartBar'),{
+  type:'bar',
+  data:{labels:data.members,datasets:[{label:'จำนวนงาน',data:data.totals,
+    backgroundColor:['#00A88F','#D94F4F','#E84393','#6B5CE7','#9CA3AF','#9CA3AF','#9CA3AF','#9CA3AF'],
+    borderRadius:6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{bodyFont:{size:13}}},
+    scales:{x:{beginAtZero:true,ticks:{stepSize:5}},y:{ticks:{font:{size:12}}}}}
+});
+
+// Doughnut
+new Chart(document.getElementById('chartDonut'),{
+  type:'doughnut',
+  data:{labels:['In-Progress (19)','New Task (21)','Meeting (17)','Plan to Do (10)','Waiting Approve (4)','Hold (3)','Waiting Info (1)'],
+    datasets:[{data:[19,21,17,10,4,3,1],
+      backgroundColor:['#00A88F','#93C5FD','#F472B6','#A78BFA','#F59E0B','#9CA3AF','#6366F1'],
+      borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+    plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:14,padding:10}}}}
+});
+
+// Stacked Bar
+new Chart(document.getElementById('chartStack'),{
+  type:'bar',
+  data:{labels:data.members,datasets:[
+    {label:'In-Progress',data:data.status.inProgress,backgroundColor:'#00A88F'},
+    {label:'Plan to Do',data:data.status.plan,backgroundColor:'#A78BFA'},
+    {label:'New Task',data:data.status.newTask,backgroundColor:'#93C5FD'},
+    {label:'Meeting',data:data.status.meeting,backgroundColor:'#F472B6'},
+    {label:'Waiting Approve',data:data.status.waiting,backgroundColor:'#F59E0B'},
+    {label:'Hold',data:data.status.hold,backgroundColor:'#9CA3AF'},
+    {label:'Waiting Info',data:data.status.info,backgroundColor:'#6366F1'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:12,padding:8}}},
+    scales:{x:{stacked:true,ticks:{font:{size:11}}},y:{stacked:true,beginAtZero:true}}}
+});
+
+// Polar
+new Chart(document.getElementById('chartPolar'),{
+  type:'polarArea',
+  data:{labels:data.members,datasets:[{data:data.totals,
+    backgroundColor:['rgba(0,168,143,0.7)','rgba(217,79,79,0.7)','rgba(232,67,147,0.7)','rgba(107,92,231,0.7)','rgba(156,163,175,0.5)','rgba(156,163,175,0.5)','rgba(156,163,175,0.5)','rgba(156,163,175,0.5)'],
+    borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12,padding:8}}}}
+});
+</script>
+</body>
+</html>

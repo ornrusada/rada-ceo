@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>RADA Slot Team Dashboard — 21 เม.ย. 2569</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#FFFFFF;--card:#F8FAFB;--card2:#EEF2F6;--text:#1A365D;--sub:#5A7A9A;--accent:#00A88F;--green:#00A88F;--yellow:#E6A817;--red:#D94F4F;--purple:#6B5CE7;--orange:#E67E22;--pink:#E84393;--blue:#1E3A5F;--teal:#00BFA5;--border:#DCE4EC}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sarabun','Tahoma',Arial,sans-serif;background:var(--card2);color:var(--text);padding:20px;line-height:1.5}
+.container{max-width:1400px;margin:0 auto}
+.header{background:linear-gradient(135deg,#1A365D 0%,#2D5A8E 100%);color:#fff;padding:28px 32px;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.header .eyebrow{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:3px;margin-bottom:6px}
+.header h1{font-size:28px;font-weight:800;margin-bottom:6px}
+.header .sub{color:#A8C0D8;font-size:14px}
+.section-title{font-size:12px;color:var(--sub);font-weight:700;letter-spacing:2px;margin:24px 0 12px 4px}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi-grid.row2{grid-template-columns:repeat(3,1fr);gap:16px}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;transition:all .2s;cursor:default}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.kpi .label{font-size:11px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.kpi .value{font-size:32px;font-weight:800;line-height:1;color:var(--text)}
+.kpi .sub{font-size:11px;color:var(--sub);margin-top:4px}
+.kpi.g .value{color:var(--green)}
+.kpi.y .value{color:var(--yellow)}
+.kpi.r .value{color:var(--red)}
+.kpi.b .value{color:var(--blue)}
+.kpi.t .value{color:var(--teal)}
+.kpi.p .value{color:var(--purple)}
+.kpi.big{padding:22px}
+.kpi.big .value{font-size:48px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+.chart-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px}
+.chart-card h3{font-size:14px;color:var(--text);font-weight:700;margin-bottom:12px}
+.chart-wrap{height:300px;position:relative}
+.table-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px}
+.table-card h3{font-size:14px;color:var(--text);font-weight:700;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--card);padding:10px 12px;text-align:left;color:var(--sub);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border)}
+tr:hover td{background:var(--card)}
+a{color:var(--text);text-decoration:none;font-weight:500}
+a:hover{color:var(--accent);text-decoration:underline}
+.badge{display:inline-block;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600;color:#fff}
+.b-g{background:var(--green)}
+.b-y{background:var(--yellow)}
+.b-r{background:var(--red)}
+.b-p{background:var(--purple)}
+.b-b{background:var(--blue)}
+.b-t{background:var(--teal)}
+.b-o{background:var(--orange)}
+.b-pk{background:var(--pink)}
+.b-gray{background:#9CA3AF}
+.progress{display:flex;align-items:center;gap:8px}
+.bar{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;min-width:60px}
+.bar-fill{height:100%;transition:width .3s}
+.pct{font-size:11px;font-weight:600;min-width:30px;text-align:right}
+.alerts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.alert{background:var(--bg);border-left:4px solid;border-radius:8px;padding:14px}
+.alert.r{border-color:var(--red)}
+.alert.y{border-color:var(--yellow)}
+.alert.o{border-color:var(--orange)}
+.alert h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.alert .cnt{font-size:24px;font-weight:800;line-height:1}
+.footer{text-align:center;color:var(--sub);font-size:12px;margin-top:24px;padding:20px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.kpi-grid.row2{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.alerts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div class="eyebrow">RADA RICHNESS</div>
+  <h1>Slot Team Dashboard</h1>
+  <div class="sub">วันอังคารที่ 21 เมษายน 2569 (พ.ศ.) · CEO: ออน (Rusada)</div>
+</div>
+
+<div class="section-title">📊 ภาพรวมทั้งหมด</div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">งานทั้งหมด</div><div class="value">77</div><div class="sub">Active tasks</div></div>
+  <div class="kpi g"><div class="label">เสร็จแล้ว</div><div class="value">0</div><div class="sub">วันนี้</div></div>
+  <div class="kpi t"><div class="label">กำลังทำ</div><div class="value">14</div><div class="sub">In-Progress</div></div>
+  <div class="kpi y"><div class="label">รอตรวจ</div><div class="value">3</div><div class="sub">Waiting CEO</div></div>
+  <div class="kpi b"><div class="label">รองาน/ใหม่</div><div class="value">36</div><div class="sub">New+Plan</div></div>
+  <div class="kpi p"><div class="label">Hold</div><div class="value">3</div><div class="sub">ค้าง</div></div>
+</div>
+
+<div class="section-title">🔥 Daily Highlights</div>
+<div class="kpi-grid row2">
+  <div class="kpi big g"><div class="label">เสร็จวันนี้</div><div class="value">0</div><div class="sub">Completed today</div></div>
+  <div class="kpi big b"><div class="label">รับใหม่วันนี้</div><div class="value">0</div><div class="sub">New today</div></div>
+  <div class="kpi big y"><div class="label">ค้างสะสม</div><div class="value">77</div><div class="sub">Backlog</div></div>
+</div>
+
+<div class="section-title">🚨 Alerts</div>
+<div class="alerts">
+  <div class="alert r"><h4>🔴 งาน Overdue</h4><div class="cnt">~40</div><div class="sub" style="font-size:11px;color:var(--sub);margin-top:4px">รวมถึง Meeting ที่ผ่านไปแล้ว</div></div>
+  <div class="alert y"><h4>⏰ รอ CEO อนุมัติ</h4><div class="cnt">3</div><div class="sub" style="font-size:11px;color:var(--sub);margin-top:4px">ทั้งหมดของ Namcha</div></div>
+  <div class="alert o"><h4>⏸ งาน Hold</h4><div class="cnt">3</div><div class="sub" style="font-size:11px;color:var(--sub);margin-top:4px">ทั้งหมดของ Namcha</div></div>
+</div>
+
+<div class="section-title">📈 Visualizations</div>
+<div class="charts">
+  <div class="chart-card"><h3>งานทั้งหมดแต่ละสมาชิก</h3><div class="chart-wrap"><canvas id="chart1"></canvas></div></div>
+  <div class="chart-card"><h3>สัดส่วนสถานะงาน</h3><div class="chart-wrap"><canvas id="chart2"></canvas></div></div>
+  <div class="chart-card"><h3>เปรียบเทียบสถานะรายคน</h3><div class="chart-wrap"><canvas id="chart3"></canvas></div></div>
+  <div class="chart-card"><h3>Workload Distribution</h3><div class="chart-wrap"><canvas id="chart4"></canvas></div></div>
+</div>
+
+<div class="section-title">📋 สรุปรายคน (Breakdown)</div>
+<div class="table-card">
+<table>
+  <thead><tr>
+    <th>สมาชิก</th><th style="text-align:center">ทั้งหมด</th><th style="text-align:center">เสร็จวันนี้</th>
+    <th style="text-align:center">กำลังทำ</th><th style="text-align:center">รอตรวจ</th>
+    <th style="text-align:center">รองาน</th><th style="text-align:center">Hold</th>
+    <th style="text-align:center">Meeting</th><th style="text-align:center">Overdue</th>
+    <th>Progress</th>
+  </tr></thead>
+  <tbody id="person-rows"></tbody>
+</table>
+</div>
+
+<div class="section-title">⏰ งานรอ CEO อนุมัติ</div>
+<div class="table-card"><table>
+  <thead><tr><th>ชื่องาน</th><th style="width:100px">Slot</th><th style="width:120px;text-align:center">สถานะ</th></tr></thead>
+  <tbody id="wait-rows"></tbody>
+</table></div>
+
+<div class="section-title">⚠️ งาน Overdue (เรียงตาม due date)</div>
+<div class="table-card"><table>
+  <thead><tr><th>ชื่องาน</th><th style="width:100px">Slot</th><th style="width:120px;text-align:center">สถานะ</th><th style="width:110px;text-align:center">Due Date</th></tr></thead>
+  <tbody id="over-rows"></tbody>
+</table></div>
+
+<div class="section-title">⏸ งาน Hold</div>
+<div class="table-card"><table>
+  <thead><tr><th>ชื่องาน</th><th style="width:100px">Slot</th></tr></thead>
+  <tbody id="hold-rows"></tbody>
+</table></div>
+
+<div class="footer">
+  <strong style="color:var(--accent)">RADA RICHNESS</strong> · Auto-generated Dashboard · วันอังคารที่ 21 เมษายน 2569
+  <br><a href="https://app.clickup.com/90181987664" target="_blank">🔗 เปิด ClickUp Workspace</a>
+</div>
+
+</div>
+
+<script>
+const allTasks = [
+  {
+    "name": "Privage I Brief Rollup / Leaflet / Souvenior English ver.",
+    "status": "new task",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86exb1fd6"
+  },
+  {
+    "name": "Privage | แก้ไขภาพ QR Code สแกน",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": 1777356000000,
+    "url": "https://app.clickup.com/t/86exakuu7"
+  },
+  {
+    "name": "RADA I รวมข้อมูล Supplier ใน Clickup",
+    "status": "new task",
+    "slot": "Namcha",
+    "due": 1777496400000,
+    "url": "https://app.clickup.com/t/86exakcxx"
+  },
+  {
+    "name": "RADA I หา Email Marketing",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": 1776805200000,
+    "url": "https://app.clickup.com/t/86exakbw6"
+  },
+  {
+    "name": "ZIRA I เตรียมข้อมูลทำสไลด์ Pitching มีท 24/04/2026",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1776978000000,
+    "url": "https://app.clickup.com/t/86exaka49"
+  },
+  {
+    "name": "P Solar I เตรียมข้อมูลทำสไลด์ Pitching Phase 2 มีท 22/04/2026",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1776805200000,
+    "url": "https://app.clickup.com/t/86exak9xf"
+  },
+  {
+    "name": "Danilife I เตรียมข้อมูลสรุปงานสำหรับมีท 21/04/2026",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1776718800000,
+    "url": "https://app.clickup.com/t/86exak9m1"
+  },
+  {
+    "name": "1688 I คัดเลือก MCN 2 เจ้า",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1776978000000,
+    "url": "https://app.clickup.com/t/86ex9tb91"
+  },
+  {
+    "name": "1688 I โทรหา Key Contact MCN",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1776891600000,
+    "url": "https://app.clickup.com/t/86ex9tb0x"
+  },
+  {
+    "name": "1688 I ส่งอีเมลหา MCN",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1776632400000,
+    "url": "https://app.clickup.com/t/86ex9tar3"
+  },
+  {
+    "name": "1688 I หาลิสต์ MCN",
+    "status": "waiting recheck&approve",
+    "slot": "Namcha",
+    "due": 1776632400000,
+    "url": "https://app.clickup.com/t/86ex9t9mh"
+  },
+  {
+    "name": "Inhouse I คัดภาพ Final ใส่เทมเพลส Portfolio",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex61m07"
+  },
+  {
+    "name": "Inhouse I รวมภาพ Final Content ใส่ GG Photo",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex61kew"
+  },
+  {
+    "name": "RADA I แจ้งเตือน Broadcast Finn Barber /Salon & Nail",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": 1776978000000,
+    "url": "https://app.clickup.com/t/86ex439xb"
+  },
+  {
+    "name": "Privage I Partner Pipeline รอบ 29/04/2026",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": 1777410000000,
+    "url": "https://app.clickup.com/t/86ex439b6"
+  },
+  {
+    "name": "Privage I Partner Pipeline รอบ 22/04/2026",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": 1776805200000,
+    "url": "https://app.clickup.com/t/86ex43959"
+  },
+  {
+    "name": "Privage I Partner Pipeline รอบ 08/04/2026",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": 1775595600000,
+    "url": "https://app.clickup.com/t/86ex43923"
+  },
+  {
+    "name": "Privage I คอนเทนต์ use case เพิ่ม",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex40vtc"
+  },
+  {
+    "name": "Privage I เช็คร้านที่เป็นลูกค้าพริเวจ + โทรสื่อสารขอใช้สถานที่",
+    "status": "hold",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex40vgv"
+  },
+  {
+    "name": "RADA I ปรับ Rate Card เป็น 9:16 ทั้งหมด",
+    "status": "waiting informations",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex30kpg"
+  },
+  {
+    "name": "RADA I รวมโลโก้ลูกค้าที่ใช้บริการ + คัดมาลง Company Profile",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex21dg2"
+  },
+  {
+    "name": "Privage I ตัดคลิปงาน Martech",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex2008q"
+  },
+  {
+    "name": "Privage I ตัดคลิปงาน Skill Series",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex1zzq5"
+  },
+  {
+    "name": "Privage I ตัดคลิปงาน Techsource โคราช",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ex1zzdp"
+  },
+  {
+    "name": "Wedding Card Project",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ewuffc6"
+  },
+  {
+    "name": "YPC I หาเรฟ + ตัดคลิปสั้นโปรโมทโครงการ",
+    "status": "hold",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew8ptmu"
+  },
+  {
+    "name": "POSxPAY I ตัดต่อวิดีโอ 2 clip",
+    "status": "hold",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew8pqmy"
+  },
+  {
+    "name": "Inhouse I หารายชื่อคอร์สเรียน หลักสูตรผู้บริหาร/นักธุรกิจ",
+    "status": "in-progress",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew8ppv9"
+  },
+  {
+    "name": "Inhouse I รวมงาน VDO ที่เคยตัดต่อ ไว้ในลิงก์เดียว",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew8ppb4"
+  },
+  {
+    "name": "สักกำบ่ I สร้าง Linktree รวม Social Media",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew8pmxv"
+  },
+  {
+    "name": "สักกำบ่ I ออกแบบ Rich Menu + สร้าง Greeting Message",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew7bz75"
+  },
+  {
+    "name": "สักกำบ่ I ทำ Rate Card ราคาขายส่ง/ขายปลีก",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew7byeu"
+  },
+  {
+    "name": "สักกำบ่ I โทรถามร้านในลิสต์ Market Survey",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew7by12"
+  },
+  {
+    "name": "Privage I เช็คงานที่ทำให้ Privage ปี 2025 และทำใบเสนอราคาย้อนหลัง",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": 1769720400000,
+    "url": "https://app.clickup.com/t/86ew7bxen"
+  },
+  {
+    "name": "Privage I Survey IG CRM B2B",
+    "status": "waiting recheck&approve",
+    "slot": "Namcha",
+    "due": 1769720400000,
+    "url": "https://app.clickup.com/t/86ew7bwq2"
+  },
+  {
+    "name": "Inhouse I วาง Flow การทำงาน และ ทำเป็น Infographic",
+    "status": "plan to do",
+    "slot": "Namcha",
+    "due": null,
+    "url": "https://app.clickup.com/t/86ew7bvuz"
+  },
+  {
+    "name": "Privage | บรีฟออกแบบป้ายพีพี บอร์ด + ขอราคางานพิมพ์",
+    "status": "waiting recheck&approve",
+    "slot": "Namcha",
+    "due": 1768424400000,
+    "url": "https://app.clickup.com/t/86ew6z70k"
+  },
+  {
+    "name": "My Pro Ads | Ads | First Meet Supplier",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1776830400000,
+    "url": "https://app.clickup.com/t/86exb09qc"
+  },
+  {
+    "name": "Spark jumps | Ads | First Meet Supplier",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1776834000000,
+    "url": "https://app.clickup.com/t/86exauug6"
+  },
+  {
+    "name": "YBN Thailand | จอง Traning CRM 15:00-16:00",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1776891600000,
+    "url": "https://app.clickup.com/t/86exauhnr"
+  },
+  {
+    "name": "Celeb Medical | CRM | Training Session 14:00-15:00",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1777014000000,
+    "url": "https://app.clickup.com/t/86exajzxx"
+  },
+  {
+    "name": "ZIRA Collagen | Project Pitching 11:00-12:00",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1777006800000,
+    "url": "https://app.clickup.com/t/86exajz3g"
+  },
+  {
+    "name": "P-Solar | Video Production | นำเสนอ Concept VDO 15:00-16:00",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1776848400000,
+    "url": "https://app.clickup.com/t/86exajy67"
+  },
+  {
+    "name": "Ennkai Resort | MAR'2026 | Monthly Report 18:00-19:00",
+    "status": "meeting",
+    "slot": "Arm",
+    "due": 1775822400000,
+    "url": "https://app.clickup.com/t/86ex4dwag"
+  },
+  {
+    "name": "Starke | Topic Review K.Arm",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1776632400000,
+    "url": "https://app.clickup.com/t/86exavyun"
+  },
+  {
+    "name": "Srifa (กำแพงเพชร) | Meeting 15:00-16:00",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775595600000,
+    "url": "https://app.clickup.com/t/86ex97egy"
+  },
+  {
+    "name": "Starke | Report Meeting 13:00-14:00",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1776373200000,
+    "url": "https://app.clickup.com/t/86ex97dj4"
+  },
+  {
+    "name": "Landing Page Website Recap K.Chompoo",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775682000000,
+    "url": "https://app.clickup.com/t/86ex6zb5k"
+  },
+  {
+    "name": "Privage x ESC Park | นำเสนอ Concept CRM (Online)",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775768400000,
+    "url": "https://app.clickup.com/t/86ex6zax8"
+  },
+  {
+    "name": "Srifa Admin Set Post Recap K.Nan",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775682000000,
+    "url": "https://app.clickup.com/t/86ex6zaej"
+  },
+  {
+    "name": "Company Profile + E-Book | BILLION THAI SUPPLYS Recap K.Wam",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775682000000,
+    "url": "https://app.clickup.com/t/86ex6zabg"
+  },
+  {
+    "name": "STARKE | Recap Content (New Topic) K.Jane",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775077200000,
+    "url": "https://app.clickup.com/t/86ex4aj1n"
+  },
+  {
+    "name": "Billion Thai Supply | Meeting 16:00-17:00 (Inhouse)",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1774990800000,
+    "url": "https://app.clickup.com/t/86ex43qwy"
+  },
+  {
+    "name": "Billion Thai Supply | Meeting 13:00-14:00",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1774990800000,
+    "url": "https://app.clickup.com/t/86ex43qtu"
+  },
+  {
+    "name": "STARKE | Monthly Meet",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1775163600000,
+    "url": "https://app.clickup.com/t/86ex43qng"
+  },
+  {
+    "name": "Srifa (กำแพงเพชร) | Meeing 16:00-17:00",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1774558800000,
+    "url": "https://app.clickup.com/t/86ex1mgkv"
+  },
+  {
+    "name": "Chata | Meeing 16:00-17:00",
+    "status": "meeting",
+    "slot": "Katiel",
+    "due": 1774386000000,
+    "url": "https://app.clickup.com/t/86ex1mfqp"
+  },
+  {
+    "name": "ISARINTR I Card Message",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1775595600000,
+    "url": "https://app.clickup.com/t/86ex9c9kj"
+  },
+  {
+    "name": "ISARINTR I Rich Message",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1776200400000,
+    "url": "https://app.clickup.com/t/86ex9c9ke"
+  },
+  {
+    "name": "1 | ธงชัยการแพทย์ | APR | SIG | โปรแรงเดือนนี้",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1776200400000,
+    "url": "https://app.clickup.com/t/86ex6z8w8"
+  },
+  {
+    "name": "1 | AMT Capital | APR | SIG | สงกรานต์รายจ่ายทะลัก",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1776200400000,
+    "url": "https://app.clickup.com/t/86ex6z8rx"
+  },
+  {
+    "name": "11 | STARKE | APR | SIG | เลิกเหนื่อยกับงานล้างเดิม",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1776200400000,
+    "url": "https://app.clickup.com/t/86ex6z8mp"
+  },
+  {
+    "name": "1 | TRiVii | APR | PHO | สบู่อาบน้ำ ลดแรง หน้าร้อน",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1776286800000,
+    "url": "https://app.clickup.com/t/86ex6z8ka"
+  },
+  {
+    "name": "ขึ้นMOTION 3 | STARKE | APR | MO",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1775077200000,
+    "url": "https://app.clickup.com/t/86ex4ha48"
+  },
+  {
+    "name": "8 | STARKE | APR | SIG | STARKE ผู้ชนะสิบทิศ",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1775077200000,
+    "url": "https://app.clickup.com/t/86ex4h9v3"
+  },
+  {
+    "name": "7 | STARKE | APR | SIG | ทีมมืออาชีพ",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774904400000,
+    "url": "https://app.clickup.com/t/86ex3k203"
+  },
+  {
+    "name": "6 | STARKE | APR | SIG | มือโปรเลือก SK-730",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774904400000,
+    "url": "https://app.clickup.com/t/86ex3k1z7"
+  },
+  {
+    "name": "5 | STARKE | APR | SIG | ทีมขัดจนเมื่อย",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774818000000,
+    "url": "https://app.clickup.com/t/86ex3k1x1"
+  },
+  {
+    "name": "4 | STARKE | APR | SIG | ซัดคราบให้ราบ",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774818000000,
+    "url": "https://app.clickup.com/t/86ex3k1u9"
+  },
+  {
+    "name": "Srifa Songkhla | APR | LINE OA | Rich Menu",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774990800000,
+    "url": "https://app.clickup.com/t/86ex2yhwj"
+  },
+  {
+    "name": "4b | STARKE | APR | SIG",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774558800000,
+    "url": "https://app.clickup.com/t/86ex2cgb3"
+  },
+  {
+    "name": "3 | STARKE | APR | MO | ล้างแอร์ให้เย็นฉ่ำ",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774558800000,
+    "url": "https://app.clickup.com/t/86ex2cg9c"
+  },
+  {
+    "name": "2 | STARKE | APR | SIG | เปียกได้ เลอะได้",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774472400000,
+    "url": "https://app.clickup.com/t/86ex2193f"
+  },
+  {
+    "name": "1 | STARKE | APR | SIG | STARKE ราชาขจัดคราบ",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774472400000,
+    "url": "https://app.clickup.com/t/86ex2190e"
+  },
+  {
+    "name": "แสงรุ่งกรุ๊ป Catalog Food | Company Profile + E-Book",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774472400000,
+    "url": "https://app.clickup.com/t/86ex218yf"
+  },
+  {
+    "name": "แก้ไข LOGO CHATA",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1774386000000,
+    "url": "https://app.clickup.com/t/86ex1mf4y"
+  },
+  {
+    "name": "Privage | VDO Motion | MAR'2026 | Line Notify",
+    "status": "new task",
+    "slot": "Bas",
+    "due": 1775595600000,
+    "url": "https://app.clickup.com/t/86ex17etq"
+  }
+];
+
+const SLOTS = ["Namcha","Arm","Katiel","Bas","Chompoo","Pang (Jr)","Ploy (Jr)","Namo (Jr)"];
+const TODAY_START = new Date('2026-04-21T00:00:00+07:00').getTime();
+const TODAY_END = new Date('2026-04-22T00:00:00+07:00').getTime();
+
+function categorize(status){
+  const s=status.toLowerCase().trim();
+  if(['complete','done','approved','approve','design done','online'].includes(s)) return 'เสร็จแล้ว';
+  if(['in-progress','in progress','compress','pitching'].includes(s)) return 'กำลังทำ';
+  if(['waiting recheck&approve','ready for review'].includes(s)) return 'รอตรวจ';
+  if(['new task','to do','plan to do'].includes(s)) return 'รองาน/ใหม่';
+  if(s==='hold') return 'Hold';
+  if(s==='meeting') return 'ประชุม';
+  if(s==='cancelled') return 'ยกเลิก';
+  if(s==='waiting informations') return 'รอข้อมูล';
+  return 'อื่นๆ';
+}
+
+function statusBadge(s){
+  const map={
+    'in-progress':['b-g','IN-PROGRESS'],
+    'plan to do':['b-p','PLAN'],
+    'new task':['b-b','NEW'],
+    'waiting recheck&approve':['b-y','รอตรวจ'],
+    'hold':['b-gray','HOLD'],
+    'waiting informations':['b-pk','รอข้อมูล'],
+    'meeting':['b-o','MEETING']
+  };
+  const [cls,label]=map[s.toLowerCase()]||['b-gray',s];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function formatDue(ms){
+  if(!ms) return '-';
+  const d=new Date(parseInt(ms));
+  const mo=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return `${d.getDate()} ${mo[d.getMonth()]} ${d.getFullYear()+543}`;
+}
+
+// Per-person aggregation
+const stats={};
+SLOTS.forEach(s=>stats[s]={total:0,completed:0,inprogress:0,waiting:0,newplan:0,hold:0,meeting:0,overdue:0});
+
+allTasks.forEach(t=>{
+  const s=stats[t.slot]; if(!s) return;
+  s.total++;
+  const st=t.status.toLowerCase();
+  if(st==='in-progress') s.inprogress++;
+  else if(st==='waiting recheck&approve') s.waiting++;
+  else if(st==='new task'||st==='plan to do') s.newplan++;
+  else if(st==='hold') s.hold++;
+  else if(st==='meeting') s.meeting++;
+  else if(st==='waiting informations') s.newplan++;
+  if(t.due && t.due<TODAY_START) s.overdue++;
+});
+
+// Populate person rows
+const pRows=document.getElementById('person-rows');
+SLOTS.forEach(s=>{
+  const d=stats[s];
+  const pct = d.total>0 ? Math.round(d.completed/d.total*100) : 0;
+  const barColor = pct>=70?'var(--green)':pct>=40?'var(--yellow)':'var(--red)';
+  pRows.insertAdjacentHTML('beforeend',`
+    <tr>
+      <td><strong>${s}</strong></td>
+      <td style="text-align:center"><strong>${d.total}</strong></td>
+      <td style="text-align:center">${d.completed}</td>
+      <td style="text-align:center">${d.inprogress}</td>
+      <td style="text-align:center">${d.waiting>0?'<span class="badge b-y">'+d.waiting+'</span>':'0'}</td>
+      <td style="text-align:center">${d.newplan}</td>
+      <td style="text-align:center">${d.hold>0?'<span class="badge b-gray">'+d.hold+'</span>':'0'}</td>
+      <td style="text-align:center">${d.meeting}</td>
+      <td style="text-align:center">${d.overdue>0?'<span class="badge b-r">'+d.overdue+'</span>':'0'}</td>
+      <td><div class="progress"><div class="bar"><div class="bar-fill" style="width:${pct}%;background:${barColor}"></div></div><span class="pct">${pct}%</span></div></td>
+    </tr>`);
+});
+
+// Waiting approve
+const waitRows=document.getElementById('wait-rows');
+allTasks.filter(t=>t.status.toLowerCase()==='waiting recheck&approve').forEach(t=>{
+  waitRows.insertAdjacentHTML('beforeend',`<tr><td><a href="${t.url}" target="_blank">${t.name}</a></td><td>${t.slot}</td><td style="text-align:center">${statusBadge(t.status)}</td></tr>`);
+});
+
+// Overdue
+const overRows=document.getElementById('over-rows');
+const overdueTasks = allTasks.filter(t=>t.due && t.due<TODAY_START).sort((a,b)=>a.due-b.due);
+overdueTasks.forEach(t=>{
+  overRows.insertAdjacentHTML('beforeend',`<tr><td><a href="${t.url}" target="_blank">${t.name}</a></td><td>${t.slot}</td><td style="text-align:center">${statusBadge(t.status)}</td><td style="text-align:center;color:var(--red);font-weight:600">${formatDue(t.due)}</td></tr>`);
+});
+
+// Hold
+const holdRows=document.getElementById('hold-rows');
+allTasks.filter(t=>t.status.toLowerCase()==='hold').forEach(t=>{
+  holdRows.insertAdjacentHTML('beforeend',`<tr><td><a href="${t.url}" target="_blank">${t.name}</a></td><td>${t.slot}</td></tr>`);
+});
+
+// Charts
+Chart.defaults.font.family="'Sarabun','Tahoma',Arial,sans-serif";
+Chart.defaults.color='#5A7A9A';
+
+// Chart 1: Bar
+new Chart(document.getElementById('chart1'),{
+  type:'bar',
+  data:{labels:SLOTS,datasets:[{label:'จำนวนงาน',data:SLOTS.map(s=>stats[s].total),backgroundColor:['#00A88F','#E67E22','#6B5CE7','#3B82F6','#E84393','#9CA3AF','#9CA3AF','#9CA3AF'],borderRadius:6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:'#EEF2F6'}},y:{grid:{display:false}}}}
+});
+
+// Chart 2: Doughnut
+new Chart(document.getElementById('chart2'),{
+  type:'doughnut',
+  data:{labels:['In-Progress','Plan to Do','New Task','รอตรวจ','Hold','รอข้อมูล','Meeting'],datasets:[{data:[14,14,22,3,3,1,20],backgroundColor:['#00A88F','#A78BFA','#93C5FD','#F59E0B','#9CA3AF','#6366F1','#F472B6']}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:11}}}}}
+});
+
+// Chart 3: Stacked Bar
+new Chart(document.getElementById('chart3'),{
+  type:'bar',
+  data:{labels:SLOTS,datasets:[
+    {label:'เสร็จแล้ว',data:SLOTS.map(s=>stats[s].completed),backgroundColor:'#00A88F'},
+    {label:'กำลังทำ',data:SLOTS.map(s=>stats[s].inprogress),backgroundColor:'#3B82F6'},
+    {label:'รอตรวจ',data:SLOTS.map(s=>stats[s].waiting),backgroundColor:'#F59E0B'},
+    {label:'รองาน',data:SLOTS.map(s=>stats[s].newplan),backgroundColor:'#A78BFA'},
+    {label:'Meeting',data:SLOTS.map(s=>stats[s].meeting),backgroundColor:'#F472B6'},
+    {label:'Hold',data:SLOTS.map(s=>stats[s].hold),backgroundColor:'#9CA3AF'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#EEF2F6'}}}}
+});
+
+// Chart 4: Polar
+new Chart(document.getElementById('chart4'),{
+  type:'polarArea',
+  data:{labels:SLOTS,datasets:[{data:SLOTS.map(s=>stats[s].total),backgroundColor:['rgba(0,168,143,.7)','rgba(230,126,34,.7)','rgba(107,92,231,.7)','rgba(59,130,246,.7)','rgba(232,67,147,.7)','rgba(156,163,175,.5)','rgba(156,163,175,.5)','rgba(156,163,175,.5)']}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:11}}}}}
+});
+</script>
+</body>
+</html>
