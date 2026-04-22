@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RADA RICHNESS — Daily Slot Team Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Thai', sans-serif;
+    background: #f4f6f8;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .email-wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #ffffff;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: linear-gradient(135deg, #1A365D 0%, #1E3A5F 50%, #00A88F 100%);
+    padding: 32px 40px;
+    text-align: center;
+    color: #fff;
+  }
+  .header .brand { font-size: 28px; font-weight: 700; letter-spacing: 2px; }
+  .header .brand span { color: #00A88F; }
+  .header .subtitle { font-size: 13px; letter-spacing: 1px; opacity: 0.85; margin-top: 4px; }
+  .header .report-title {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.15);
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 24px;
+  }
+  .header .date-line {
+    margin-top: 12px;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  /* ─── Summary Bar ─── */
+  .summary-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 16px;
+    background: #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .summary-item { text-align: center; }
+  .summary-item .num {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1A365D;
+  }
+  .summary-item .num.urgent { color: #DC2626; }
+  .summary-item .num.warning { color: #F59E0B; }
+  .summary-item .num.good { color: #00A88F; }
+  .summary-item .label {
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* ─── Content ─── */
+  .content { padding: 24px 32px; }
+
+  /* Section headings */
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A365D;
+    margin: 28px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #00A88F;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ─── Slot Card ─── */
+  .slot-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .slot-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #1A365D;
+    color: #fff;
+  }
+  .slot-name { font-weight: 600; font-size: 14px; }
+  .slot-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+  }
+  .stat-badge {
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .stat-badge.progress { background: #00A88F; }
+  .stat-badge.waiting { background: #F59E0B; color: #1A365D; }
+  .stat-badge.overdue { background: #DC2626; }
+
+  .slot-card-body { padding: 12px 16px; }
+
+  /* Task rows */
+  .task-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+    gap: 10px;
+  }
+  .task-row:last-child { border-bottom: none; }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .status-dot.new { background: #93C5FD; }
+  .status-dot.plan { background: #A78BFA; }
+  .status-dot.progress { background: #00A88F; }
+  .status-dot.waiting { background: #F59E0B; }
+  .status-dot.hold { background: #9CA3AF; }
+  .status-dot.meeting { background: #F472B6; }
+
+  .task-name { flex: 1; color: #374151; }
+  .task-name a { color: #1A365D; text-decoration: none; }
+  .task-name a:hover { text-decoration: underline; }
+
+  .task-due {
+    font-size: 11px;
+    color: #6b7280;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .task-due.overdue { color: #DC2626; font-weight: 600; }
+
+  .task-status-label {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .task-status-label.new { background: #DBEAFE; color: #1E40AF; }
+  .task-status-label.plan { background: #EDE9FE; color: #6D28D9; }
+  .task-status-label.progress { background: #D1FAE5; color: #065F46; }
+  .task-status-label.waiting { background: #FEF3C7; color: #92400E; }
+  .task-status-label.hold { background: #F3F4F6; color: #4B5563; }
+  .task-status-label.meeting { background: #FCE7F3; color: #9D174D; }
+
+  /* ─── Overdue Alert ─── */
+  .alert-box {
+    background: #FEF2F2;
+    border-left: 4px solid #DC2626;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 16px;
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: #DC2626;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .alert-box .alert-item {
+    font-size: 13px;
+    color: #7F1D1D;
+    padding: 3px 0;
+  }
+
+  /* ─── Approve Section ─── */
+  .approve-box {
+    background: #FFFBEB;
+    border-left: 4px solid #F59E0B;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 16px;
+  }
+  .approve-box .approve-title {
+    font-weight: 700;
+    color: #92400E;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  /* ─── Legend ─── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 0;
+    font-size: 11px;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 20px 32px;
+    background: #1A365D;
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+  }
+  .footer a { color: #00A88F; text-decoration: none; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 600px) {
+    .content { padding: 16px; }
+    .summary-bar { flex-wrap: wrap; gap: 12px; }
+    .slot-card-header { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="email-wrapper">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="header">
+    <div class="brand">RADA <span>RICHNESS</span></div>
+    <div class="subtitle">DIGITAL MARKETING AGENCY</div>
+    <div class="report-title">Daily Slot Team Report</div>
+    <div class="date-line">วันศุกร์ที่ 17 เมษายน 2569 — เวลา 20:00 น.</div>
+  </div>
+
+  <!-- ═══ EXECUTIVE DAILY SNAPSHOT ═══ -->
+  <div style="padding:24px 32px 20px;background:#ffffff;">
+    <div style="font-size:16px;font-weight:700;color:#1A365D;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #00A88F;">
+      สรุปภาพรวมวันนี้ — Executive Snapshot
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;">
+
+      <!-- งานเสร็จวันนี้ -->
+      <div style="flex:1;background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border-radius:12px;padding:20px 16px;text-align:center;border:1px solid #6EE7B7;">
+        <div style="font-size:11px;font-weight:600;color:#065F46;text-transform:uppercase;letter-spacing:1px;">เสร็จวันนี้</div>
+        <div style="font-size:36px;font-weight:800;color:#047857;margin:6px 0 2px;">5</div>
+        <div style="font-size:11px;color:#065F46;">tasks completed</div>
+        <div style="margin-top:8px;font-size:18px;">&#9989;</div>
+      </div>
+
+      <!-- งานรับใหม่วันนี้ -->
+      <div style="flex:1;background:linear-gradient(135deg,#DBEAFE,#BFDBFE);border-radius:12px;padding:20px 16px;text-align:center;border:1px solid #93C5FD;">
+        <div style="font-size:11px;font-weight:600;color:#1E40AF;text-transform:uppercase;letter-spacing:1px;">รับใหม่วันนี้</div>
+        <div style="font-size:36px;font-weight:800;color:#1D4ED8;margin:6px 0 2px;">3</div>
+        <div style="font-size:11px;color:#1E40AF;">new tasks</div>
+        <div style="margin-top:8px;font-size:18px;">&#128229;</div>
+      </div>
+
+      <!-- งานค้างสะสม -->
+      <div style="flex:1;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;padding:20px 16px;text-align:center;border:1px solid #FCD34D;">
+        <div style="font-size:11px;font-weight:600;color:#92400E;text-transform:uppercase;letter-spacing:1px;">ค้างสะสม</div>
+        <div style="font-size:36px;font-weight:800;color:#B45309;margin:6px 0 2px;">18</div>
+        <div style="font-size:11px;color:#92400E;">pending tasks</div>
+        <div style="margin-top:8px;font-size:18px;">&#128203;</div>
+      </div>
+
+    </div>
+
+    <!-- Net Flow Indicator -->
+    <div style="text-align:center;margin-top:14px;padding:10px 16px;background:#F8FAFC;border-radius:8px;border:1px solid #E2E8F0;">
+      <span style="font-size:13px;color:#1A365D;font-weight:600;">
+        &#128200; วันนี้ปิดงานได้มากกว่ารับเข้า
+      </span>
+      <span style="display:inline-block;margin-left:8px;background:#D1FAE5;color:#047857;padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;">
+        +2 net completed
+      </span>
+    </div>
+  </div>
+
+  <!-- ═══ SUMMARY BAR ═══ -->
+  <div class="summary-bar">
+    <div class="summary-item">
+      <div class="num">64</div>
+      <div class="label">งานทั้งหมด</div>
+    </div>
+    <div class="summary-item">
+      <div class="num good">10</div>
+      <div class="label">In-Progress</div>
+    </div>
+    <div class="summary-item">
+      <div class="num warning">3</div>
+      <div class="label">รออนุมัติ</div>
+    </div>
+    <div class="summary-item">
+      <div class="num urgent">3</div>
+      <div class="label">Overdue</div>
+    </div>
+    <div class="summary-item">
+      <div class="num">2</div>
+      <div class="label">Hold</div>
+    </div>
+  </div>
+
+  <!-- ═══ PIE CHART — สัดส่วนสถานะงาน ═══ -->
+  <div style="text-align:center;padding:24px 32px 8px;">
+    <div style="font-size:16px;font-weight:700;color:#1A365D;margin-bottom:16px;">สัดส่วนสถานะงานทั้งหมด</div>
+    <svg viewBox="0 0 400 220" width="400" height="220" style="max-width:100%;">
+      <!-- Pie Chart: Total 64 tasks -->
+      <!-- Complete: 46 (71.9%) = 259° | In-Progress: 10 (15.6%) = 56° | Waiting: 3 (4.7%) = 17° | Overdue: 3 (4.7%) = 17° | Hold: 2 (3.1%) = 11° -->
+
+      <!-- Complete slice (0° to 259°) — Teal -->
+      <path d="M110,110 L110,10 A100,100 0 1,1 22.6,158.8 Z" fill="#00A88F" />
+      <!-- In-Progress slice (259° to 315°) — Amber -->
+      <path d="M110,110 L22.6,158.8 A100,100 0 0,1 40.2,30.6 Z" fill="#F59E0B" />
+      <!-- Waiting slice (315° to 332°) — Orange -->
+      <path d="M110,110 L40.2,30.6 A100,100 0 0,1 62.2,17.2 Z" fill="#E67E22" />
+      <!-- Overdue slice (332° to 349°) — Red -->
+      <path d="M110,110 L62.2,17.2 A100,100 0 0,1 88.0,11.2 Z" fill="#DC2626" />
+      <!-- Hold slice (349° to 360°) — Gray -->
+      <path d="M110,110 L88.0,11.2 A100,100 0 0,1 110,10 Z" fill="#9CA3AF" />
+
+      <!-- Center white circle (donut) -->
+      <circle cx="110" cy="110" r="55" fill="#ffffff" />
+      <text x="110" y="105" text-anchor="middle" font-size="22" font-weight="800" fill="#1A365D">64</text>
+      <text x="110" y="124" text-anchor="middle" font-size="11" fill="#6b7280">งานทั้งหมด</text>
+
+      <!-- Legend -->
+      <rect x="240" y="30" width="14" height="14" rx="3" fill="#00A88F"/>
+      <text x="260" y="42" font-size="12" fill="#333">เสร็จแล้ว — 46 (72%)</text>
+
+      <rect x="240" y="56" width="14" height="14" rx="3" fill="#F59E0B"/>
+      <text x="260" y="68" font-size="12" fill="#333">กำลังทำ — 10 (16%)</text>
+
+      <rect x="240" y="82" width="14" height="14" rx="3" fill="#E67E22"/>
+      <text x="260" y="94" font-size="12" fill="#333">รอตรวจ — 3 (5%)</text>
+
+      <rect x="240" y="108" width="14" height="14" rx="3" fill="#DC2626"/>
+      <text x="260" y="120" font-size="12" fill="#333">Overdue — 3 (5%)</text>
+
+      <rect x="240" y="134" width="14" height="14" rx="3" fill="#9CA3AF"/>
+      <text x="260" y="146" font-size="12" fill="#333">Hold — 2 (3%)</text>
+    </svg>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ OVERDUE ALERT ═══ -->
+    <div class="alert-box">
+      <div class="alert-title">&#9888; งาน Overdue — ต้องติดตาม</div>
+      <div class="alert-item">&#8226; <strong>Namcha</strong> — Privage I เช็คงานที่ทำให้ Privage ปี 2025 (กำหนด 30 ม.ค. 2026) <span style="color:#DC2626">[Priority: High]</span></div>
+      <div class="alert-item">&#8226; <strong>Namcha</strong> — Privage I Survey IG CRM B2B (กำหนด 30 ม.ค. 2026) <span style="color:#DC2626">[Priority: High]</span></div>
+      <div class="alert-item">&#8226; <strong>Namcha</strong> — Privage I บรีฟออกแบบป้ายพีพี บอร์ด (กำหนด 15 ม.ค. 2026) <span style="color:#DC2626">[Priority: Urgent]</span></div>
+    </div>
+
+    <!-- ═══ WAITING APPROVE ═══ -->
+    <div class="approve-box">
+      <div class="approve-title">&#9200; รอตรวจ / รออนุมัติ</div>
+      <div class="alert-item">&#8226; <strong>Namcha</strong> — Privage I Survey IG CRM B2B</div>
+      <div class="alert-item">&#8226; <strong>Namcha</strong> — Privage I บรีฟออกแบบป้ายพีพี บอร์ด + ขอราคางานพิมพ์</div>
+    </div>
+
+    <!-- ═══ SLOT NAMCHA ═══ -->
+    <div class="section-title">&#128100; สรุปรายคน — Slot Team</div>
+
+    <div class="slot-card">
+      <div class="slot-card-header">
+        <div class="slot-name">&#128204; Slot Namcha — น้ำชา (Varintorn)</div>
+        <div class="slot-stats">
+          <span class="stat-badge progress">IP: 10</span>
+          <span class="stat-badge waiting">WR: 2</span>
+          <span class="stat-badge overdue">OD: 3</span>
+        </div>
+      </div>
+      <div class="slot-card-body">
+        <div class="task-row">
+          <div class="status-dot progress"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex43923">Privage I Partner Pipeline รอบ 08/04/2026</a></div>
+          <span class="task-status-label progress">IN-PROGRESS</span>
+          <div class="task-due">กำหนด 8 เม.ย.</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot progress"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex40vtc">Privage I คอนเทนต์ use case เพิ่ม</a></div>
+          <span class="task-status-label progress">IN-PROGRESS</span>
+          <div class="task-due">—</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot progress"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex2008q">Privage I ตัดคลิปงาน Martech</a></div>
+          <span class="task-status-label progress">IN-PROGRESS</span>
+          <div class="task-due">—</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot plan"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex43959">Privage I Partner Pipeline รอบ 22/04/2026</a></div>
+          <span class="task-status-label plan">PLAN TO DO</span>
+          <div class="task-due">กำหนด 22 เม.ย.</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot waiting"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ew7bwq2">Privage I Survey IG CRM B2B</a></div>
+          <span class="task-status-label waiting">WAITING RECHECK</span>
+          <div class="task-due overdue">กำหนด 30 ม.ค. (overdue)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLOT ARM ═══ -->
+    <div class="slot-card">
+      <div class="slot-card-header">
+        <div class="slot-name">&#128204; Slot Arm — อาร์ม (Supapong)</div>
+        <div class="slot-stats">
+          <span class="stat-badge" style="background:#93C5FD;color:#1E40AF">MTG: 2</span>
+        </div>
+      </div>
+      <div class="slot-card-body">
+        <div class="task-row">
+          <div class="status-dot meeting"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex3gr7z">STARKE | Monthly Report Meeting 11:00-12:00</a></div>
+          <span class="task-status-label meeting">MEETING</span>
+          <div class="task-due">กำหนด 17 เม.ย.</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot meeting"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex4dwag">Ennkai Resort | MAR'2026 | Monthly Report</a></div>
+          <span class="task-status-label meeting">MEETING</span>
+          <div class="task-due">กำหนด 10 เม.ย.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLOT BAS ═══ -->
+    <div class="slot-card">
+      <div class="slot-card-header">
+        <div class="slot-name">&#128204; Slot Bas — บาส (Rachan)</div>
+        <div class="slot-stats">
+          <span class="stat-badge" style="background:#93C5FD;color:#1E40AF">NEW: 20+</span>
+        </div>
+      </div>
+      <div class="slot-card-body">
+        <div class="task-row">
+          <div class="status-dot new"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex17etq">Privage | VDO Motion | MAR'2026 | แจกแต้มปุ๊บ เด้งเตือนปั๊บ!</a></div>
+          <span class="task-status-label new">NEW TASK</span>
+          <div class="task-due">กำหนด 8 เม.ย.</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot new"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex4ha48">STARKE | APR | MO | ล้างแอร์ให้เย็นฉ่ำ</a></div>
+          <span class="task-status-label new">NEW TASK</span>
+          <div class="task-due">กำหนด 1 เม.ย.</div>
+        </div>
+        <div class="task-row" style="color:#9CA3AF;font-style:italic;">
+          <div class="status-dot new"></div>
+          <div class="task-name">... และอีก 18+ tasks (STARKE, ธงชัยการแพทย์, AMT Capital, TRiVii, ISARINTR ฯลฯ)</div>
+          <div class="task-due"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLOT KATIEL ═══ -->
+    <div class="slot-card">
+      <div class="slot-card-header">
+        <div class="slot-name">&#128204; Slot Katiel — คาเทียล (Jomsuda)</div>
+        <div class="slot-stats">
+          <span class="stat-badge" style="background:#FCE7F3;color:#9D174D">MTG: 9</span>
+        </div>
+      </div>
+      <div class="slot-card-body">
+        <div class="task-row">
+          <div class="status-dot meeting"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex6zax8">Privage x ESC Park I นำเสนอ Concept CRM</a></div>
+          <span class="task-status-label meeting">MEETING</span>
+          <div class="task-due">กำหนด 10 เม.ย.</div>
+        </div>
+        <div class="task-row">
+          <div class="status-dot meeting"></div>
+          <div class="task-name"><a href="https://app.clickup.com/t/86ex97egy">Srifa (กำแพงเพชร) | Meeting 15:00-16:00</a></div>
+          <span class="task-status-label meeting">MEETING</span>
+          <div class="task-due">กำหนด 8 เม.ย.</div>
+        </div>
+        <div class="task-row" style="color:#9CA3AF;font-style:italic;">
+          <div class="status-dot meeting"></div>
+          <div class="task-name">... และอีก 7 meetings (STARKE, Billion Thai, Chata ฯลฯ)</div>
+          <div class="task-due"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLOT CHOMPOO ═══ -->
+    <div class="slot-card">
+      <div class="slot-card-header">
+        <div class="slot-name">&#128204; Slot Chompoo — ชมพู่ (Chamaibhorn)</div>
+        <div class="slot-stats">
+          <span class="stat-badge" style="background:#D1FAE5;color:#065F46">ไม่มีงาน active</span>
+        </div>
+      </div>
+      <div class="slot-card-body">
+        <div class="task-row" style="color:#9CA3AF;font-style:italic;">
+          <div class="task-name">ไม่พบงาน active ใน Slot นี้ (อาจอยู่ใน Space อื่น)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLOT JR TEAM ═══ -->
+    <div class="slot-card">
+      <div class="slot-card-header">
+        <div class="slot-name">&#128204; Slot Pang-Jr / Ploy-Jr / Namo-Jr</div>
+        <div class="slot-stats">
+          <span class="stat-badge" style="background:#D1FAE5;color:#065F46">ไม่มีงาน active</span>
+        </div>
+      </div>
+      <div class="slot-card-body">
+        <div class="task-row" style="color:#9CA3AF;font-style:italic;">
+          <div class="task-name">ไม่พบงาน active ใน Slot ทีม Junior</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ LEGEND ═══ -->
+    <div class="legend">
+      <div class="legend-item"><div class="status-dot new"></div> New Task</div>
+      <div class="legend-item"><div class="status-dot plan"></div> Plan to Do</div>
+      <div class="legend-item"><div class="status-dot progress"></div> In-Progress</div>
+      <div class="legend-item"><div class="status-dot waiting"></div> Waiting Recheck</div>
+      <div class="legend-item"><div class="status-dot hold"></div> Hold</div>
+      <div class="legend-item"><div class="status-dot meeting"></div> Meeting</div>
+    </div>
+
+  </div>
+
+  <!-- ═══ CTA BUTTON — เปิด ClickUp ═══ -->
+  <div style="text-align:center;padding:20px 32px 28px;">
+    <a href="https://app.clickup.com/90181987664" target="_blank"
+       style="display:inline-block;background:#00A88F;color:#ffffff;padding:14px 36px;
+              border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;
+              letter-spacing:0.5px;box-shadow:0 4px 12px rgba(0,168,143,0.3);
+              transition:background 0.2s;">
+      &#128279; เปิด ClickUp Workspace
+    </a>
+    <div style="margin-top:8px;font-size:11px;color:#9CA3AF;">คลิกเพื่อดูรายละเอียดงานทั้งหมดใน ClickUp</div>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    <p>RADA RICHNESS CO.,LTD. — Daily Slot Team Report</p>
+    <p style="margin-top:4px;">ส่งอัตโนมัติทุกวันจันทร์–ศุกร์ เวลา 20:00 น. (เว้นวันหยุดนักขัตฤกษ์)</p>
+    <p style="margin-top:4px;">ข้อมูลดึงจาก <a href="https://app.clickup.com">ClickUp</a> — Workspace: RADA RICHNESS</p>
+    <p style="margin-top:8px;opacity:0.6;">Powered by Claude AI — RADA Audit Team</p>
+  </div>
+
+</div>
+</body>
+</html>
